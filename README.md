@@ -1,2 +1,21 @@
-# aff.py
-A CLI tool to edit Arcaea chart file or songlist simply.
+# arc.py
+
+一组为处理Arcaea谱面（`.aff`）以及其他相关文件设计的CLI工具。
+
+仍处于早期阶段。
+
+# 功能
+
+- [x] 对Arcaea下载的数据文件进行整理，方便制谱器读取。
+
+**还有即将到来的...**
+
+- [ ] 根据`songconfig.txt`自动生成`songlist`
+    
+    - [x] 兼容`Brcbeb Soulmate`等生成工具
+
+    - [x] 根据`songlist`批量生成对应的`songconfig.txt`
+
+- [ ] 提供易于调用的`.aff`解析模块，以及编辑工具
+
+- [ ] i18n支持
