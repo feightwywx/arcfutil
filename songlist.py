@@ -3,13 +3,15 @@
 
 # Author: .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
-
+import copy
 import json
+import shutil
 import sys
 import getopt
 import os
 from collections import OrderedDict
 import time
+import logging
 
 sl_langkeys = (
     'en',
@@ -86,17 +88,31 @@ boolvaluelst = (
     'songlist_hidden'
 )
 
+songfolderskiplst = (
+    'base.jpg',
+    'base_256.jpg'
+)
+
+LOG_FORMAT = '[%(asctime)s][%(levelname)s]%(message)s'
+DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
+
 
 def parse_songlist(slpath: str) -> dict:
+    """
+    :param slpath: path of "songlist" file
+    """
     sl = {}
     try:
         with open(slpath, 'r', encoding='utf-8') as f:
             sl = json.loads(f.read())
     except FileNotFoundError:
-        print('未找到对应的songlist文件：{0}'.format(slpath))
+        logging.warning('未找到对应的songlist文件：{0}'.format(slpath))
         exit(1)
     finally:
-        return sl
+        if sl != {}:
+            return sl
+        else:
+            raise FileNotFoundError
 
 
 def parse_songconfig(scpath: str) -> dict:
@@ -108,7 +124,7 @@ def parse_songconfig(scpath: str) -> dict:
                 if len(linesplit) == 2:
                     sc[linesplit[0]] = linesplit[1][:-1]  # 去除行尾的\n
     except FileNotFoundError:
-        print('无效的目录：{0}'.format(scpath))
+        logging.warning('未找到对应的songconfig.txt文件：{0}'.format(scpath))
     finally:
         return sc
 
@@ -367,10 +383,11 @@ def songconfig2songlist(eachsong: dict) -> OrderedDict:
 
     songlist['difficulties'] = songlist_diff
 
+    logging.debug(songlist)
     return songlist
 
 
-def gen_songlist(path: str):
+def gen_songlist(path: str, withtempest: bool = False):
     songspath = os.path.join(path, 'songs')
     songlistpath = os.path.join(songspath, 'songlist')
     songslst = os.listdir(songspath)
@@ -380,36 +397,38 @@ def gen_songlist(path: str):
             continue
         eachsongpath = os.path.join(songspath, eachsongfolder, 'songconfig.txt')
         songconfig = parse_songconfig(eachsongpath)
-        songlistsongs.append(songconfig2songlist(songconfig))
-    songlistsongs.append(
-        {
-            "id": "tempestissimo",
-            "title_localized": {
-                "en": "Tempestissimo"
-            },
-            "artist": "t+pazolite",
-            "bpm": "231",
-            "bpm_base": 231,
-            "set": "vs",
-            "purchase": "vs",
-            "audioPreview": 60000,
-            "audioPreviewEnd": 70000,
-            "side": 1,
-            "bg": "tempestissimo",
-            "remote_dl": True,
-            "world_unlock": False,
-            "byd_local_unlock": True,
-            "date": 1590537605,
-            "version": "3.0",
-            "difficulties": [
-            ]
-        }
-    )
+        if songconfig != {}:
+            songlistsongs.append(songconfig2songlist(songconfig))
+    if withtempest:
+        songlistsongs.append(
+            {
+                "id": "tempestissimo",
+                "title_localized": {
+                    "en": "Tempestissimo"
+                },
+                "artist": "t+pazolite",
+                "bpm": "231",
+                "bpm_base": 231,
+                "set": "vs",
+                "purchase": "vs",
+                "audioPreview": 60000,
+                "audioPreviewEnd": 70000,
+                "side": 1,
+                "bg": "tempestissimo",
+                "remote_dl": True,
+                "world_unlock": False,
+                "byd_local_unlock": True,
+                "date": 1590537605,
+                "version": "3.0",
+                "difficulties": [
+                ]
+            }
+        )
     songlist = {'songs': songlistsongs}
-    print(songlistsongs)
     sl = json.dumps(songlist, ensure_ascii=False, indent=2)
     with open(songlistpath, 'w', encoding='utf-8') as slfile:
         slfile.write(sl)
+    print('生成的songlist包含曲目数：{0}'.format(len(songlist['songs'])))
 
 
 def gen_songconfig(path: str):
@@ -427,35 +446,97 @@ def gen_songconfig(path: str):
             scfile.write(songconfig)
 
 
-def gen_packlist(path: str):  # TODO: 生成packlist(-p)
-    pass
+def gen_packlist(path: str, withtempest: bool = False):
+    packlist_template = OrderedDict(
+        [
+            ('id', '__PLACEHOLDER__'),
+            ('plus_character', -1),
+            ('custom_banner', True),
+            ('name_localized', {
+                'en': '__PLACEHOLDER__'
+            }),
+            ('description_localized', {
+                'en': '',
+                'ja': ''
+            })
+        ]
+    )
+    songspath = os.path.join(path, 'songs')
+    packlistpath = os.path.join(songspath, 'packlist')
+    songlistpath = os.path.join(songspath, 'songlist')
+    songlist = parse_songlist(songlistpath)
+    packidlist = []
+    packslist = []
+    for each in songlist['songs']:  # each is dict
+        try:
+            packid = each['set']
+            if withtempest and packid == 'vs':
+                continue
+            if packid not in packidlist:
+                packidlist.append(packid)
+        except KeyError as ex:
+            logging.error(ex)
+    for each in packidlist:  # each is str
+        temppackdict = packlist_template
+        temppackdict['id'] = each
+        temppackdict['name_localized']['en'] = each
+        packslist.append(copy.deepcopy(temppackdict))
+    packlist = json.dumps({'packs': packslist}, ensure_ascii=False, indent=2)
+    with open(packlistpath, 'w', encoding='utf-8') as plf:
+        plf.write(packlist)
+        print('生成的曲包数：{0}'.format(len(packslist)))
 
 
-def bg_copy(path: str):  # TODO: 复制背景文件(-b)
-    pass
+def bg_copy(path: str):
+    bgpath = os.path.join(path, 'img', 'bg')
+    songspath = os.path.join(path, 'songs')
+    copiedbg = []
+    for song in os.listdir(songspath):
+        if song in songsfolderskiplst:
+            continue
+        songpath = os.path.join(songspath, song)
+        for songfile in os.listdir(songpath):
+            if songfile.endswith('.jpg') and songfile not in songfolderskiplst:
+                shutil.copy(os.path.join(songpath, songfile), os.path.join(bgpath, songfile))
+                copiedbg.append(songfile)
+    if copiedbg:
+        print('已复制自定义背景列表：')
+        for each in copiedbg:
+            print(each)
+    else:
+        print('没有要复制的自定义背景')
 
 
 def man():
     print(
         r'''
-        aff.py
+        arc.py
         songlist generator
 
         Usage:
-        songlist [-hr] <inputpath>
+        songlist [-hrpbt] <inputpath>
         inputpath: The folder which contains Arcaea assets(e.g. /songs, /img, etc.).
         -h help: Show this help message.
         -r reverse: Generate "songconfig.txt" from "songlist" file for every song.
+        -p packlist: Generate "packlist"
+        -b bg: copy background files to ./img/bg/ path.
+        -t tempest: Generate "songlist" with song "tempestissimo".
         ''')
 
 
 def main():
+    logging.basicConfig(filename='soulmate.log', level=logging.DEBUG, format=LOG_FORMAT, datefmt=DATE_FORMAT)
+
+    # flags
+    withtempest = False
+    withpacklist = False
+    withbgcopy = False
     realargv = sys.argv[1:]
     if not len(realargv):  # Arguments not given
         man()
         sys.exit(0)
     try:
-        opts, args = getopt.getopt(realargv, 'hrpb', ['help', 'reverse', 'packlist', 'bg'])
+        opts, args = getopt.getopt(realargv, 'hrpbt', ['help', 'reverse', 'packlist', 'bg', 'tempestw'])
     except getopt.GetoptError:
         sys.exit(1)
 
@@ -465,19 +546,29 @@ def main():
         assetspath = args[0]
 
     if opts:
-        for opt in opts[0]:
+        for opt, arg in opts:
             if opt == '-h' or opt == '--help':
                 man()
+                sys.exit(0)
             elif opt == '-r' or opt == '--reverse':
-                print('开始生成songconfig.txt')
+                logging.info('开始生成songconfig.txt')
                 gen_songconfig(assetspath)
                 sys.exit(0)
-    print('开始生成songlist')
-    gen_songlist(assetspath)
-    print('开始生成packlist')
-    gen_packlist(assetspath)
-    print('开始复制背景文件')
-    bg_copy(assetspath)
+
+            if opt == '-t' or opt == '--tempest':
+                withtempest = True
+            if opt == '-p' or opt == '--packlist':
+                withpacklist = True
+            if opt == '-b' or opt == '--bg':
+                withbgcopy = True
+    logging.info('开始生成songlist')
+    gen_songlist(assetspath, withtempest)
+    if withpacklist:
+        logging.info('开始生成packlist')
+        gen_packlist(assetspath, withtempest)
+    if withbgcopy:
+        logging.info('开始复制背景文件')
+        bg_copy(assetspath)
 
 
 if __name__ == '__main__':
