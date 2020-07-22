@@ -468,6 +468,7 @@ def main():
         for opt in opts[0]:
             if opt == '-h' or opt == '--help':
                 man()
+                sys.exit(0)
             elif opt == '-r' or opt == '--reverse':
                 print('开始生成songconfig.txt')
                 gen_songconfig(assetspath)
