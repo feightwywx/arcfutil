@@ -352,22 +352,22 @@ def songconfig2songlist(eachsong: dict) -> OrderedDict:
                     try:
                         songlist_ratingclass['chartDesigner'] = eachsong['designer']
                     except KeyError:
-                        pass
+                        songlist_ratingclass[skey_diff] = ''
                     try:
                         songlist_ratingclass['chartDesigner'] = eachsong['designer_{0}'.format(eachratingclass)]
                     except KeyError:
-                        pass
+                        songlist_ratingclass[skey_diff] = ''
                     continue
 
                 if skey_diff == 'jacketDesigner':
                     try:
                         songlist_ratingclass['jacketDesigner'] = eachsong['jacketdesigner']
                     except KeyError:
-                        pass
+                        songlist_ratingclass[skey_diff] = ''
                     try:
                         songlist_ratingclass['jacketDesigner'] = eachsong['jacketdesigner_{0}'.format(eachratingclass)]
                     except KeyError:
-                        pass
+                        songlist_ratingclass[skey_diff] = ''
                     continue
 
                 if skey_diff in intvaluelst:
