@@ -1,6 +1,8 @@
-# arc.py
+# arcfutil
 
-一组为处理Arcaea谱面（`.aff`）以及其他相关文件设计的CLI工具。
+(a.k.a. Arcaea File Utility)
+
+为处理Arcaea相关文件（谱面，songlist，etc.）设计的Python框架。
 
 仍处于早期阶段。
 

@@ -130,6 +130,7 @@ def parse_songconfig(scpath: str) -> dict:
 
 
 def songlist2songconfig(eachsong: dict) -> str:
+    # TODO: ratingPlus 写入支持
     songconfig = ''
     for skey in sl_singlekeys:
         try:
@@ -233,6 +234,7 @@ def songlist2songconfig(eachsong: dict) -> str:
 
 
 def songconfig2songlist(eachsong: dict) -> OrderedDict:
+    # TODO: ratingPlus_x 读取支持
     timestamp = int(time.time())
     songlist = OrderedDict()
     for skey in sl_singlekeys:

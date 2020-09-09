@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+
+# Author: .direwolf <kururinmiracle@outlook.com>
+# Licensed under the MIT License.
+
+import re
+from Aff import AffNote
+
+
+# 正则表达式  TODO camera和scene
+patt_offset = r'AudioOffset:(\d+)'
+patt_tap = r'\((\d+),([1-4])\);'
+patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
+patt_arc = r'arc\((\d+),(\d+),(-*\d+.\d+),(-*\d+.\d+),([a-z]{1,4}),(-*\d+.\d+),(-*\d+.\d+),([0-2]),([a-z]+),([a-z]+)\)'\
+           r'.*;'
+patt_arctap = r'arctap\(([0-9]+)\)'
+patt_timing = r'timing\((\d+),(-*\d+.\d{2}),(\d+.\d{2})\);'
+patt_camera = r''
+patt_scene = r''
+
+
+def dumpline(note: AffNote.Note):
+    pass
+
+
+def dumps(aff: list):
+    pass
+
+
+def loadline(note: str):
+    noteobj = None
+    if re.match(patt_tap, note):
+        notepara = re.findall(patt_tap, note)
+        noteobj = AffNote.Tap(time=int(notepara[0]), lane=int(notepara[1]))
+    elif re.match(patt_hold, note):
+        notepara = re.findall(patt_hold, note)
+        noteobj = AffNote.Hold(time=int(notepara[0]), totime=int(notepara[1]), lane=int(notepara[2]))
+    elif re.match(patt_arc, note):
+        notepara = re.findall(patt_arc, note)
+        noteeasing, notecolor, notefx = None, None, None
+        arctap = re.findall(patt_arctap, note)
+
+        # 转换为枚举类型
+        for each in AffNote.SlideEasing:
+            if each.value == notepara[4]:
+                noteeasing = each
+        for each in AffNote.ArcColor:
+            if each.value == notepara[7]:
+                notecolor = each
+        for each in AffNote.FX:
+            if each.value == notepara[8]:
+                notefx = each
+
+        noteobj = AffNote.Arc(time=int(notepara[0]), totime=int(notepara[1]), fromx=float(notepara[2]),
+                              fromy=float(notepara[3]), tox=float(notepara[5]), toy=float(notepara[6]),
+                              isskyline=bool(notepara[9]))
+
+        # 如果不为None就设置属性
+        if noteeasing:
+            noteobj.slideeasing = noteeasing
+        if notecolor:
+            noteobj.color = notecolor
+        if notefx:
+            noteobj.fx = notefx
+        if arctap:
+            noteobj.skynote = arctap
+    elif re.match(patt_timing, note):
+        notepara = re.findall(patt_timing, note)
+        noteobj = AffNote.Timing(time=int(notepara[0]), bpm=float(notepara[1]), bar=float(notepara[2]))
+        return noteobj
+
+    return noteobj
+
+
+def loads(path: str):
+    with open(path, mode='r') as faff:
+        pass
