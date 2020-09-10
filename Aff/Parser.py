@@ -74,5 +74,8 @@ def loadline(note: str):
 
 
 def loads(path: str):
+    notelist = []
     with open(path, mode='r') as faff:
-        pass
+        for eachline in faff:
+            notelist.append(loadline(eachline))
+            
