@@ -42,6 +42,12 @@ class Note:
     def copyto(self, dest: int):
         pass
         # 接下来的行为根据子类而定
+    
+    
+class AudioOffset(Note):  # 虽然不太合理，但还是继承了Note对象））
+    def __init__(self, offset: int):
+        super(AudioOffset, self).__init__(0)
+        self.offset = offset
 
 
 class Tap(Note):

@@ -3,4 +3,5 @@
 # Author: .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
-from Aff import AffNote
+from . import AffException
+from . import AffNote

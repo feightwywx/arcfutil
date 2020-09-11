@@ -5,19 +5,19 @@
 # Licensed under the MIT License.
 
 import re
-from Aff import AffNote
+from .Aff import AffNote
 
 
 # 正则表达式  TODO camera和scene
-patt_offset = r'AudioOffset:(\d+)'
-patt_tap = r'\((\d+),([1-4])\);'
-patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
-patt_arc = r'arc\((\d+),(\d+),(-*\d+.\d+),(-*\d+.\d+),([a-z]{1,4}),(-*\d+.\d+),(-*\d+.\d+),([0-2]),([a-z]+),([a-z]+)\)'\
-           r'.*;'
-patt_arctap = r'arctap\(([0-9]+)\)'
-patt_timing = r'timing\((\d+),(-*\d+.\d{2}),(\d+.\d{2})\);'
-patt_camera = r''
-patt_scene = r''
+__patt_offset = r'AudioOffset:(\d+)'
+__patt_tap = r'\((\d+),([1-4])\);'
+__patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
+__patt_arc = r'arc\((\d+),(\d+),(-*\d+.\d+),(-*\d+.\d+),([a-z]{1,4}),(-*\d+.\d+),(-*\d+.\d+),([0-2]),([a-z]+),'\
+             r'([a-z]+)\).*;'
+__patt_arctap = r'arctap\(([0-9]+)\)'
+__patt_timing = r'timing\((\d+),(-*\d+.\d{2}),(\d+.\d{2})\);'
+__patt_camera = r''
+__patt_scene = r''
 
 
 def dumpline(note: AffNote.Note):
@@ -30,16 +30,19 @@ def dumps(aff: list):
 
 def loadline(note: str):
     noteobj = None
-    if re.match(patt_tap, note):
-        notepara = re.findall(patt_tap, note)
+    if re.match(__patt_offset, note):
+        offset = re.findall(__patt_offset, note)[0][0]
+        noteobj = AffNote.AudioOffset(int(offset))
+    elif re.match(__patt_tap, note):
+        notepara = re.findall(__patt_tap, note)[0]
         noteobj = AffNote.Tap(time=int(notepara[0]), lane=int(notepara[1]))
-    elif re.match(patt_hold, note):
-        notepara = re.findall(patt_hold, note)
+    elif re.match(__patt_hold, note):
+        notepara = re.findall(__patt_hold, note)[0]
         noteobj = AffNote.Hold(time=int(notepara[0]), totime=int(notepara[1]), lane=int(notepara[2]))
-    elif re.match(patt_arc, note):
-        notepara = re.findall(patt_arc, note)
+    elif re.match(__patt_arc, note):
+        notepara = re.findall(__patt_arc, note)[0]
         noteeasing, notecolor, notefx = None, None, None
-        arctap = re.findall(patt_arctap, note)
+        arctap = re.findall(__patt_arctap, note)
 
         # 转换为枚举类型
         for each in AffNote.SlideEasing:
@@ -65,8 +68,8 @@ def loadline(note: str):
             noteobj.fx = notefx
         if arctap:
             noteobj.skynote = arctap
-    elif re.match(patt_timing, note):
-        notepara = re.findall(patt_timing, note)
+    elif re.match(__patt_timing, note):
+        notepara = re.findall(__patt_timing, note)[0]
         noteobj = AffNote.Timing(time=int(notepara[0]), bpm=float(notepara[1]), bar=float(notepara[2]))
         return noteobj
 
@@ -78,4 +81,4 @@ def loads(path: str):
     with open(path, mode='r') as faff:
         for eachline in faff:
             notelist.append(loadline(eachline))
-            
+    return notelist
