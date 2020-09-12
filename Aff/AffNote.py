@@ -9,14 +9,14 @@ from copy import deepcopy
 
 
 class SlideEasing(Enum):
-    b = 0
-    s = 1
-    si = 2
-    so = 3
-    sisi = 4
-    siso = 5
-    sosi = 6
-    soso = 7
+    b = 'b'
+    s = 's'
+    si = 'si'
+    so = 'so'
+    sisi = 'sisi'
+    siso = 'siso'
+    sosi = 'sosi'
+    soso = 'soso'
 
 
 class FX(Enum):
@@ -38,10 +38,6 @@ class Note:
 
     def type(self):
         return type(self).__name__
-
-    def copyto(self, dest: int):
-        pass
-        # 接下来的行为根据子类而定
     
     
 class AudioOffset(Note):  # 虽然不太合理，但还是继承了Note对象））
@@ -49,11 +45,17 @@ class AudioOffset(Note):  # 虽然不太合理，但还是继承了Note对象）
         super(AudioOffset, self).__init__(0)
         self.offset = offset
 
+    def __repr__(self):
+        return 'AudioOffset:{offset}'.format(offset = self.offset)
+
 
 class Tap(Note):
     def __init__(self, time: int, lane: int):
         super(Tap, self).__init__(time)
         self.lane: int = lane
+
+    def __repr__(self):
+        return '({time},{lane});'.format(time = self.time, lane = self.lane)
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -65,10 +67,13 @@ class Tap(Note):
 
 
 class Hold(Tap):
-    def __init__(self, time: int, lane: int, totime: int):
+    def __init__(self, time: int, totime: int, lane: int):
         super(Hold, self).__init__(time, lane)
         self.totime: int = totime
         self._alterself = deepcopy(self)
+
+    def __repr__(self):
+        return 'hold({time},{totime},{lane});'.format(time = self.time, totime = self.totime, lane = self.lane)
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -103,6 +108,28 @@ class Arc(Note):
         self.skynote: list = skynote
         self.fx: FX = fx
 
+    def __repr__(self):
+        arcstr = 'arc({time},{totime},{fromx:.2f},{fromy:.2f},{slideeasing},{tox:.2f},{toy:.2f},{color},{fx},{isskyline})'.format(
+            time = self.time,
+            totime = self.totime,
+            fromx = self.fromx,
+            fromy = self.fromy,
+            slideeasing = self.slideeasing.value,
+            tox = self.tox,
+            toy = self.toy,
+            color = self.color.value,
+            fx = self.fx.name,
+            isskyline = 'true' if self.isskyline else 'false'
+        )
+        skynotestr = ''
+        if self.skynote:
+            for i in range(len(self.skynote)):
+                eachtime = self.skynote[i]
+                skynotestr += 'arctap({time})'.format(time = eachtime)
+                if i != len(self.skynote) - 1:
+                    skynotestr += ','
+        return arcstr + ('[{0}]'.format(skynotestr) if skynotestr else '') + ';'
+
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
         self._alterself.time = dest
@@ -120,6 +147,9 @@ class Timing(Note):
         super(Timing, self).__init__(time)
         self.bpm: float = bpm
         self.bar: float = bar
+
+    def __repr__(self):
+        return 'timing({time},{bpm:.2f},{bar:.2f});'.format(time = self.time, bpm = self.bpm, bar = self.bar)
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
