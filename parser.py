@@ -76,6 +76,14 @@ def loadline(note: str):
     return noteobj
 
 
+def load(aff: str):
+    affnotelist = str.splitlines()
+    notelist = []
+    for eachline in affnotelist:
+        notelist.append(loadline(eachline))
+    return notelist
+
+
 def loads(path: str):
     notelist = []
     with open(path, mode='r') as faff:
