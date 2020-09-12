@@ -9,29 +9,44 @@ from .Aff import AffNote
 
 
 # 正则表达式  TODO camera和scene
-__patt_offset = r'AudioOffset:(\d+)'
+__patt_offset = r'AudioOffset:(-*\d+)'
 __patt_tap = r'\((\d+),([1-4])\);'
 __patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
-__patt_arc = r'arc\((\d+),(\d+),(-*\d+.\d+),(-*\d+.\d+),([a-z]{1,4}),(-*\d+.\d+),(-*\d+.\d+),([0-2]),([a-z]+),'\
-             r'([a-z]+)\).*;'
+__patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([0-2]),([a-z]+),([a-z]+)\).*;'
 __patt_arctap = r'arctap\(([0-9]+)\)'
-__patt_timing = r'timing\((\d+),(-*\d+.\d{2}),(\d+.\d{2})\);'
+__patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
 __patt_camera = r''
 __patt_scene = r''
 
 
 def dumpline(note: AffNote.Note):
-    pass
+    return str(note)
 
 
-def dumps(aff: list):
-    pass
+def dump(notelist: list):
+    affstr = ''
+    for eachline in notelist:
+        if eachline:
+            affstr += (str(eachline) + '\n')
+        else:
+            affstr += '-\n'
+    return affstr
+
+
+def dumps(notelist: list, destpath: str):
+    with open(destpath, 'w') as faff:
+        for eachline in notelist:
+            if eachline:
+                faff.write(str(eachline) + '\n')
+            else:
+                faff.write('-\n')
+    return destpath
 
 
 def loadline(note: str):
     noteobj = None
     if re.match(__patt_offset, note):
-        offset = re.findall(__patt_offset, note)[0][0]
+        offset = re.findall(__patt_offset, note)[0]
         noteobj = AffNote.AudioOffset(int(offset))
     elif re.match(__patt_tap, note):
         notepara = re.findall(__patt_tap, note)[0]
