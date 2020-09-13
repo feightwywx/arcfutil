@@ -12,7 +12,8 @@ from .Aff import AffNote
 __patt_offset = r'AudioOffset:(-*\d+)'
 __patt_tap = r'\((\d+),([1-4])\);'
 __patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
-__patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([0-2]),([a-z]+),([a-z]+)\).*;'
+__patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([0-2]),' \
+             r'([a-z]+),([a-z]+)\).*;'
 __patt_arctap = r'arctap\(([0-9]+)\)'
 __patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
 __patt_camera = r''
@@ -92,7 +93,7 @@ def loadline(note: str):
 
 
 def load(aff: str):
-    affnotelist = str.splitlines()
+    affnotelist = aff.splitlines()
     notelist = []
     for eachline in affnotelist:
         notelist.append(loadline(eachline))

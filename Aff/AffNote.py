@@ -38,15 +38,15 @@ class Note:
 
     def type(self):
         return type(self).__name__
-    
-    
+
+
 class AudioOffset(Note):  # 虽然不太合理，但还是继承了Note对象））
     def __init__(self, offset: int):
         super(AudioOffset, self).__init__(0)
         self.offset = offset
 
     def __repr__(self):
-        return 'AudioOffset:{offset}'.format(offset = self.offset)
+        return 'AudioOffset:{offset}'.format(offset=self.offset)
 
 
 class Tap(Note):
@@ -55,7 +55,7 @@ class Tap(Note):
         self.lane: int = lane
 
     def __repr__(self):
-        return '({time},{lane});'.format(time = self.time, lane = self.lane)
+        return '({time},{lane});'.format(time=self.time, lane=self.lane)
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -73,7 +73,7 @@ class Hold(Tap):
         self._alterself = deepcopy(self)
 
     def __repr__(self):
-        return 'hold({time},{totime},{lane});'.format(time = self.time, totime = self.totime, lane = self.lane)
+        return 'hold({time},{totime},{lane});'.format(time=self.time, totime=self.totime, lane=self.lane)
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -109,23 +109,24 @@ class Arc(Note):
         self.fx: FX = fx
 
     def __repr__(self):
-        arcstr = 'arc({time},{totime},{fromx:.2f},{fromy:.2f},{slideeasing},{tox:.2f},{toy:.2f},{color},{fx},{isskyline})'.format(
-            time = self.time,
-            totime = self.totime,
-            fromx = self.fromx,
-            fromy = self.fromy,
-            slideeasing = self.slideeasing.value,
-            tox = self.tox,
-            toy = self.toy,
-            color = self.color.value,
-            fx = self.fx.name,
-            isskyline = 'true' if self.isskyline else 'false'
-        )
+        arcstr = 'arc({time},{totime},{fromx:.2f},{fromy:.2f},{slideeasing},{tox:.2f},{toy:.2f},{color},{fx},' \
+                 '{isskyline})'.format(
+                    time=self.time,
+                    totime=self.totime,
+                    fromx=self.fromx,
+                    fromy=self.fromy,
+                    slideeasing=self.slideeasing.value,
+                    tox=self.tox,
+                    toy=self.toy,
+                    color=self.color.value,
+                    fx=self.fx.name,
+                    isskyline='true' if self.isskyline else 'false'
+                 )
         skynotestr = ''
         if self.skynote:
             for i in range(len(self.skynote)):
                 eachtime = self.skynote[i]
-                skynotestr += 'arctap({time})'.format(time = eachtime)
+                skynotestr += 'arctap({time})'.format(time=eachtime)
                 if i != len(self.skynote) - 1:
                     skynotestr += ','
         return arcstr + ('[{0}]'.format(skynotestr) if skynotestr else '') + ';'
@@ -149,7 +150,7 @@ class Timing(Note):
         self.bar: float = bar
 
     def __repr__(self):
-        return 'timing({time},{bpm:.2f},{bar:.2f});'.format(time = self.time, bpm = self.bpm, bar = self.bar)
+        return 'timing({time},{bpm:.2f},{bar:.2f});'.format(time=self.time, bpm=self.bpm, bar=self.bar)
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
