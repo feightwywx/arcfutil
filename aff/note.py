@@ -88,13 +88,13 @@ class Arc(Note):
                  totime: int,
                  fromx: float,
                  fromy: float,
+                 slideeasing: SlideEasing,
                  tox: float,
                  toy: float,
-                 slideeasing: SlideEasing = SlideEasing.b,
-                 color: ArcColor = ArcColor.blue,
-                 isskyline: bool = False,
-                 skynote: list = None,
-                 fx: FX = FX.none
+                 color: ArcColor,
+                 isskyline: bool,
+                 skynote: list,
+                 fx: FX
                  ):
         super(Arc, self).__init__(time)
         self.totime: int = totime
@@ -144,7 +144,7 @@ class Arc(Note):
 
 
 class Timing(Note):
-    def __init__(self, time: int, bpm: float, bar: float = 4):
+    def __init__(self, time: int, bpm: float, bar: float):
         super(Timing, self).__init__(time)
         self.bpm: float = bpm
         self.bar: float = bar
