@@ -35,7 +35,7 @@ def arc(time: int, totime: int, fromx: float, fromy: float, slideeasing: SlideEa
     return note.Arc(time, totime, fromx, fromy, slideeasing, tox, toy, color, isskyline, skynote, fx)
 
 
-def timing(time: int, bpm: int, bar: float = 4):
+def timing(time: int, bpm: float, bar: float = 4):
     return note.Timing(time, bpm, bar)
 
 
