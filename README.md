@@ -10,6 +10,8 @@
 - [x] 将`.aff`中的note解析为python对象（以及将这些对象生成回`.aff`的note格式）
 
   - [x] `AudioOffset`，`tap`，`hold`，`arc`（包含`arctap`）以及`timing`
+  
+  - [ ] `timinggroup`计划中
 
   - [ ] `camera`和`scene`计划中
   

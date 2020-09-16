@@ -69,7 +69,7 @@ def loadline(notestr: str):
             if each.value == notepara[4]:
                 noteeasing = each
         for each in note.ArcColor:
-            if each.value == notepara[7]:
+            if each.value == int(notepara[7]):
                 notecolor = each
         for each in note.FX:
             if each.value == notepara[8]:
@@ -77,7 +77,8 @@ def loadline(notestr: str):
 
         noteobj = note.Arc(time=int(notepara[0]), totime=int(notepara[1]), fromx=float(notepara[2]),
                            fromy=float(notepara[3]), tox=float(notepara[5]), toy=float(notepara[6]),
-                           isskyline=bool(notepara[9]))
+                           isskyline=bool(notepara[9]), color=notecolor, slideeasing=noteeasing, fx=notefx,
+                           skynote=arctap)
 
         # 如果不为None就设置属性
         if noteeasing:

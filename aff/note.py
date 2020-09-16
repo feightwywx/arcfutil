@@ -34,6 +34,7 @@ class ArcColor(Enum):
 class Note:
     def __init__(self, time: int):
         self.time: int = time
+        self.type = type(self).__name__
         self._alterself = None  # Temp
 
     def type(self):

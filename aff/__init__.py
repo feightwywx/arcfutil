@@ -6,6 +6,7 @@
 
 from . import note
 from . import parser
+from . import sorter
 
 # note
 SlideEasing = note.SlideEasing
@@ -81,3 +82,8 @@ def loads(path: str) -> list:
     :return: A list of note objects.
     """
     return parser.loads(path)
+
+
+# sorter
+def sort(unsorted: list):
+    return sorter.sort(unsorted)
