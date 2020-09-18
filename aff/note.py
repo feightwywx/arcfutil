@@ -165,3 +165,28 @@ class Camera(Note):  # TODO: Camera语句
 
 class SceneControl(Note):  # TODO: SceneControl语句
     pass
+
+
+class TimingGroup(list):
+    def __init__(self, tup):
+        super().__init__(tup)
+        self.type = type(self).__name__
+
+    def __getattr__(self, item):
+        # 把timinggroup中第二个元素的time属性，当作整个timinggroup的属性
+        # 如果timinggroup只有一个元素或者为空就返回0
+        if item == 'time':
+            if len(self) > 1:
+                return self[1].time
+            else:
+                return 0
+
+    def __repr__(self):
+        group = 'timinggroup(){'
+        for each in self:
+            group += '\n{0}'.format(each)
+        group += '\n};'
+        return group
+
+    def type(self):
+        return type(self).__name__

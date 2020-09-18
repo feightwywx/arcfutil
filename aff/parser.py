@@ -48,7 +48,7 @@ def dumps(notelist: list, destpath: str):
     return True
 
 
-def loadline(notestr: str):
+def __loadline(notestr: str):
     noteobj = None
     if re.match(patt_offset, notestr):
         offset = re.findall(patt_offset, notestr)[0]
@@ -93,15 +93,38 @@ def loadline(notestr: str):
         notepara = re.findall(patt_timing, notestr)[0]
         noteobj = note.Timing(time=int(notepara[0]), bpm=float(notepara[1]), bar=float(notepara[2]))
         return noteobj
+    elif notestr == 'timinggroup(){':  # flag
+        return '_groupbegin_'
+    elif notestr == '};':
+        return '_groupend_'
 
     return noteobj
 
 
 def load(affstr: str):
-    affnotelist = affstr.splitlines()
+    notestrlist = affstr.splitlines()
     notelist = []
-    for eachline in affnotelist:
-        notelist.append(loadline(eachline))
+    for eachline in notestrlist:
+        notelist.append(__loadline(eachline))
+
+    tmpgroup = []
+    currlen = len(notelist)
+    for i in range(currlen - 1):
+        if i < len(notelist) and notelist[i] == '_groupbegin_':
+            notelist.pop(i)
+            # 哦我的上帝，这循环比隔壁苏珊阿姨的苹果派还要烂，让我直想穿皮靴狠狠踹你的屁股
+            while True:
+                try:
+                    if notelist[i] == '_groupend_':
+                        notelist.pop(i)
+                        break
+                except IndexError:  # 没有timinggroup结束标记
+                    pass
+                tmpgroup.append(notelist[i])
+                notelist.pop(i)
+            notelist.insert(i, note.TimingGroup(tmpgroup))
+            tmpgroup = []
+
     return notelist
 
 
@@ -109,5 +132,5 @@ def loads(path: str):
     notelist = []
     with open(path, mode='r') as faff:
         for eachline in faff:
-            notelist.append(loadline(eachline))
+            notelist.append(__loadline(eachline))
     return notelist

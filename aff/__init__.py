@@ -17,6 +17,7 @@ Tap = note.Tap
 Hold = note.Hold
 Arc = note.Arc
 Timing = note.Timing
+TimingGroup = note.TimingGroup
 
 
 def audiooffset(offset: int):
@@ -38,6 +39,10 @@ def arc(time: int, totime: int, fromx: float, fromy: float, slideeasing: SlideEa
 
 def timing(time: int, bpm: float, bar: float = 4):
     return note.Timing(time, bpm, bar)
+
+
+def timinggroup(*notes):
+    return TimingGroup(notes)
 
 
 # parser
