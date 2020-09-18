@@ -83,7 +83,7 @@ class Hold(Tap):
         return self._alterself
 
 
-class Arc(Note):
+class Arc(Note):  # TODO str转枚举(__setattr__)
     def __init__(self,
                  time: int,
                  totime: int,

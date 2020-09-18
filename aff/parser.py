@@ -6,6 +6,7 @@
 
 import re
 from . import note
+from . import sorter
 
 
 # 正则表达式  TODO camera和scene
@@ -20,11 +21,16 @@ patt_camera = r''
 patt_scene = r''
 
 
-def dumpline(noteobj: note.Note):
+def append(noteobj, path: str):  # TODO 向aff追加note的功能——！
+    pass
+
+
+def __dumpline(noteobj: note.Note):
     return str(noteobj)
 
 
 def dump(notelist: list):
+    notelist = sorter.sort(notelist)
     affstr = ''
     isfirsthyphen = False
     for eachline in notelist:
@@ -37,6 +43,7 @@ def dump(notelist: list):
 
 
 def dumps(notelist: list, destpath: str):
+    notelist = sorter.sort(notelist)
     isfirsthyphen = False
     with open(destpath, 'w') as faff:
         for eachline in notelist:
@@ -46,6 +53,28 @@ def dumps(notelist: list, destpath: str):
                 faff.write('-\n')
                 isfirsthyphen = True
     return True
+
+
+def __serialgroup(notelist):
+    tmpgroup = []
+    currlen = len(notelist)
+    for i in range(currlen - 1):
+        if i < len(notelist) and notelist[i] == '_groupbegin_':
+            notelist.pop(i)  # 扔掉初始标记
+            # 哦我的上帝，这循环比隔壁苏珊阿姨的苹果派还要烂，让我直想穿皮靴狠狠踹你的屁股
+            while True:
+                try:
+                    if notelist[i] == '_groupend_':
+                        notelist.pop(i)  # 扔掉结束标记，
+                        break  # 然后跳出死循环
+                except IndexError:  # 没有找到timinggroup结束标记
+                    pass
+                tmpgroup.append(notelist[i])
+                notelist.pop(i)
+            notelist.insert(i, note.TimingGroup(tmpgroup))
+            tmpgroup = []
+
+    return notelist
 
 
 def __loadline(notestr: str):
@@ -106,31 +135,13 @@ def load(affstr: str):
     notelist = []
     for eachline in notestrlist:
         notelist.append(__loadline(eachline))
-
-    tmpgroup = []
-    currlen = len(notelist)
-    for i in range(currlen - 1):
-        if i < len(notelist) and notelist[i] == '_groupbegin_':
-            notelist.pop(i)
-            # 哦我的上帝，这循环比隔壁苏珊阿姨的苹果派还要烂，让我直想穿皮靴狠狠踹你的屁股
-            while True:
-                try:
-                    if notelist[i] == '_groupend_':
-                        notelist.pop(i)
-                        break
-                except IndexError:  # 没有timinggroup结束标记
-                    pass
-                tmpgroup.append(notelist[i])
-                notelist.pop(i)
-            notelist.insert(i, note.TimingGroup(tmpgroup))
-            tmpgroup = []
-
-    return notelist
+    return __serialgroup(notelist)
 
 
 def loads(path: str):
     notelist = []
     with open(path, mode='r') as faff:
         for eachline in faff:
-            notelist.append(__loadline(eachline))
-    return notelist
+            notelist.append(__loadline(eachline[:-1]))
+    print(notelist)
+    return __serialgroup(notelist)

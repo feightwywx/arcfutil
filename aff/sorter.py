@@ -28,6 +28,7 @@ def sort(unsorted: list):
             elif eachnote.type == 'Hold':
                 sortable_hold.append(eachnote)
             elif eachnote.type == 'Arc':
+                eachnote.skynote = sorted(eachnote.skynote)
                 sortable_arc.append(eachnote)
             elif eachnote.type == 'TimingGroup':
                 sortable_group.append(note.TimingGroup(sort(eachnote)))

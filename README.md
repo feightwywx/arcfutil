@@ -11,7 +11,7 @@
 
   - [x] `AudioOffset`，`tap`，`hold`，`arc`（包含`arctap`）以及`timing`
   
-  - [ ] `timinggroup`计划中
+  - [x] `timinggroup`支持
 
   - [ ] `camera`和`scene`计划中
   
