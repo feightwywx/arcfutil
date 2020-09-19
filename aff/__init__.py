@@ -13,10 +13,13 @@ SlideEasing = note.SlideEasing
 FX = note.FX
 ArcColor = note.ArcColor
 AudioOffset = note.AudioOffset
+CameraEasing = note.CameraEasing
+SceneType = note.SceneType
 Tap = note.Tap
 Hold = note.Hold
 Arc = note.Arc
 Timing = note.Timing
+Camera = note.Camera
 TimingGroup = note.TimingGroup
 
 
@@ -39,6 +42,12 @@ def arc(time: int, totime: int, fromx: float, fromy: float, slideeasing, tox: fl
 
 def timing(time: int, bpm: float, bar: float = 4):
     return note.Timing(time, bpm, bar)
+
+
+def camera(time: int, transverse: float, bottomzoom: float, linezoom: float, steadyangle: float, topzoom: float,
+           angle: float, easing, lastingtime: int):
+    return note.Camera(time, transverse, bottomzoom, linezoom, steadyangle, topzoom, angle, easing, lastingtime)
+
 
 
 def timinggroup(*notes):

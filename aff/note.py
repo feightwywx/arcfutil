@@ -31,6 +31,22 @@ class ArcColor(Enum):
     green = 2
 
 
+class CameraEasing(Enum):
+    cubicin = 'qi'
+    cubicout = 'qo'
+    line = 'l'
+    reset = 'reset'
+    sine = 's'
+
+
+class SceneType(Enum):
+    trackshow = 'trackshow'
+    trackhide = 'trackhide'
+    redline = 'redline'
+    arcahvdistort = 'arcahvdistort'
+    arcahvdebris = 'arcahvdebris'
+
+
 class Note:
     def __init__(self, time: int):
         self.time: int = time
@@ -160,7 +176,6 @@ class Arc(Note):
                 self.__dict__[key] = ArcColor.blue
 
         if type(value).__name__ != 'FX' and key == 'fx':
-            print(value, fxs)
             if value in fxs:
                 for each in FX:
                     if each.value == value:
@@ -201,8 +216,45 @@ class Timing(Note):
         return self._alterself
 
 
-class Camera(Note):  # TODO: Camera语句
-    pass
+class Camera(Note):
+    def __init__(self, time: int, transverse: float, bottomzoom: float, linezoom: float, steadyangle: float,
+                 topzoom: float, angle: float, easing, lastingtime: int):
+        super().__init__(time)
+        self.transverse: float = transverse
+        self.bottomzoom: float = bottomzoom
+        self.linezoom: float = linezoom
+        self.steadyangle: float = steadyangle
+        self.topzoom: float = topzoom
+        self.angle: float = angle
+        self.easing: CameraEasing = easing
+        self.lastingtime: float = lastingtime
+
+    def __setattr__(self, key, value):
+        super().__setattr__(key, value)
+        easings = {name for name, member in CameraEasing.__members__.items()}.union(
+            {member.value for name, member in CameraEasing.__members__.items()})
+        if type(value).__name__ != 'CameraEasing' and key == 'easing':
+            if value in easings:
+                for each in CameraEasing:
+                    if each.value == value:
+                        self.__dict__[key] = each
+                    elif each.name == value:
+                        self.__dict__[key] = each
+            else:
+                print('Value', value, 'is invalid. Setting CameraEasing.sine.')  # TODO 抛出异常
+                self.__dict__[key] = CameraEasing.sine
+
+    def __repr__(self):
+        return 'camera({time},{trans:.2f},{bzoom:.2f},{lzoom:.2f},{stangle:.2f},{tzoom:.2f},{angle:.2f},{easing},' \
+               '{lasting});'.format(
+                time=self.time, trans=self.transverse, bzoom=self.bottomzoom, lzoom=self.linezoom,
+                stangle=self.steadyangle, tzoom=self.topzoom, angle=self.angle, easing=self.easing.value,
+                lasting=self.lastingtime)
+
+    def copyto(self, dest: int):
+        self._alterself = deepcopy(self)
+        self._alterself.time = dest
+        return self._alterself
 
 
 class SceneControl(Note):  # TODO: SceneControl语句

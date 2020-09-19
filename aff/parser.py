@@ -9,7 +9,7 @@ from . import note
 from . import sorter
 
 
-# 正则表达式  TODO camera和scene
+# 正则表达式  TODO scene
 patt_offset = r'AudioOffset:(-*\d+)'
 patt_tap = r'\((\d+),([1-4])\);'
 patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
@@ -17,7 +17,7 @@ patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[
              r'([a-z]+),([a-z]+)\).*;'
 patt_arctap = r'arctap\(([0-9]+)\)'
 patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
-patt_camera = r''
+patt_camera = r'camera\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]+),(\d+)\);'
 patt_scene = r''
 
 
@@ -44,6 +44,7 @@ def dump(notelist: list):
 
 def dumps(notelist: list, destpath: str):
     notelist = sorter.sort(notelist)
+    print(notelist)
     isfirsthyphen = False
     with open(destpath, 'w') as faff:
         for eachline in notelist:
@@ -122,6 +123,9 @@ def __loadline(notestr: str):
         notepara = re.findall(patt_timing, notestr)[0]
         noteobj = note.Timing(time=int(notepara[0]), bpm=float(notepara[1]), bar=float(notepara[2]))
         return noteobj
+    elif re.match(patt_camera, notestr):
+        notepara = re.findall(patt_camera, notestr)[0]
+        noteobj = note.Camera(int(notepara[0]), float(notepara[1]), float(notepara[2]), float(notepara[3]), float(notepara[4]), float(notepara[5]), float(notepara[6]), str(notepara[7]), int(notepara[8]))
     elif notestr == 'timinggroup(){':  # flag
         return '_groupbegin_'
     elif notestr == '};':
