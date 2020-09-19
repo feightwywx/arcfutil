@@ -105,9 +105,9 @@ def __loadline(notestr: str):
                 notefx = each
 
         noteobj = note.Arc(time=int(notepara[0]), totime=int(notepara[1]), fromx=float(notepara[2]),
-                           fromy=float(notepara[3]), tox=float(notepara[5]), toy=float(notepara[6]),
-                           isskyline=bool(notepara[9]), color=notecolor, slideeasing=noteeasing, fx=notefx,
-                           skynote=arctap)
+                           fromy=float(notepara[3]), slideeasing=notepara[4], tox=float(notepara[5]),
+                           toy=float(notepara[6]), color=int(notepara[7]), fx=notepara[8],
+                           isskyline=bool(notepara[9]), skynote=arctap)
 
         # 如果不为None就设置属性
         if noteeasing:

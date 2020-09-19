@@ -83,19 +83,19 @@ class Hold(Tap):
         return self._alterself
 
 
-class Arc(Note):  # TODO str转枚举(__setattr__)
+class Arc(Note):
     def __init__(self,
                  time: int,
                  totime: int,
                  fromx: float,
                  fromy: float,
-                 slideeasing: SlideEasing,
+                 slideeasing,
                  tox: float,
                  toy: float,
-                 color: ArcColor,
+                 color,
                  isskyline: bool,
                  skynote: list,
-                 fx: FX
+                 fx
                  ):
         super(Arc, self).__init__(time)
         self.totime: int = totime
@@ -131,6 +131,48 @@ class Arc(Note):  # TODO str转枚举(__setattr__)
                 if i != len(self.skynote) - 1:
                     skynotestr += ','
         return arcstr + ('[{0}]'.format(skynotestr) if skynotestr else '') + ';'
+
+    def __setattr__(self, key, value):
+        super().__setattr__(key, value)
+        easings = {name for name, member in SlideEasing.__members__.items()}
+        colors = {name for name, member in ArcColor.__members__.items()}.union(
+                 {member.value for name, member in ArcColor.__members__.items()})
+        fxs = {name for name, member in FX.__members__.items()}
+
+        if type(value).__name__ != 'SlideEasing' and key == 'slideeasing':
+            if value in easings:
+                for each in SlideEasing:
+                    if each.value == value:
+                        self.__dict__[key] = each
+            else:
+                print('Value', value, 'is invalid. Setting Slideeasing.b.')  # TODO 抛出异常
+                self.__dict__[key] = SlideEasing.b
+
+        if type(value).__name__ != 'ArcColor' and key == 'color':
+            if value in colors:
+                for each in ArcColor:
+                    if each.value == value:
+                        self.__dict__[key] = each
+                    elif each.name == value:
+                        self.__dict__[key] = each
+            else:
+                print('Value', value, 'is invalid. Setting ArcColor.blue.')  # TODO 抛出异常
+                self.__dict__[key] = ArcColor.blue
+
+        if type(value).__name__ != 'FX' and key == 'fx':
+            print(value, fxs)
+            if value in fxs:
+                for each in FX:
+                    if each.value == value:
+                        self.__dict__[key] = each
+                    elif each.name == value:
+                        self.__dict__[key] = each
+            else:
+                print('Value', value, 'is invalid. Setting FX.none.')  # TODO 抛出异常
+                self.__dict__[key] = FX.none
+
+        if key == 'skynote' and value:
+            self.__dict__[key] = sorted(value)
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)

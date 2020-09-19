@@ -32,7 +32,7 @@ def hold(time: int, totime: int, lane: int):
     return note.Hold(time, totime, lane)
 
 
-def arc(time: int, totime: int, fromx: float, fromy: float, slideeasing: SlideEasing, tox: float, toy: float,
+def arc(time: int, totime: int, fromx: float, fromy: float, slideeasing, tox: float, toy: float,
         color: ArcColor, isskyline: bool, skynote: list = None, fx: FX = FX.none):
     return note.Arc(time, totime, fromx, fromy, slideeasing, tox, toy, color, isskyline, skynote, fx)
 
