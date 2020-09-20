@@ -49,6 +49,9 @@ def camera(time: int, transverse: float, bottomzoom: float, linezoom: float, ste
     return note.Camera(time, transverse, bottomzoom, linezoom, steadyangle, topzoom, angle, easing, lastingtime)
 
 
+def scenecontrol(time: int, scenetype, x: float = None, y: int = None):
+    return note.SceneControl(time, scenetype, x, y)
+
 
 def timinggroup(*notes):
     return TimingGroup(notes)

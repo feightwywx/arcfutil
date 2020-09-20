@@ -14,6 +14,7 @@ def sort(unsorted: list):
     sortable_hold = []
     sortable_arc = []
     sortable_camera = []
+    sortable_scene = []
     sortable_group = []
     offset = None
     sortedlist = []
@@ -33,10 +34,13 @@ def sort(unsorted: list):
                 sortable_arc.append(eachnote)
             elif eachnote.type == 'Camera':
                 sortable_camera.append(eachnote)
+            elif eachnote.type == 'SceneControl':
+                sortable_scene.append(eachnote)
             elif eachnote.type == 'TimingGroup':
                 sortable_group.append(note.TimingGroup(sort(eachnote)))
     sortedlist.extend(sorted(sortable_camera, key=attrgetter('time')))
     sortedlist.extend(sorted(sortable_timing, key=attrgetter('time')))
+    sortedlist.extend(sorted(sortable_scene, key=attrgetter('time')))
     sortedlist.extend(sorted(sortable_tap, key=attrgetter('time', 'lane')))
     sortedlist.extend(sorted(sortable_hold, key=attrgetter('time', 'lane', 'totime')))
     sortedlist.extend(sorted(sortable_arc, key=attrgetter('time', 'fromx', 'fromy', 'totime', 'tox', 'toy')))

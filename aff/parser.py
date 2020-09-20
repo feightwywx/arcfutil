@@ -9,7 +9,7 @@ from . import note
 from . import sorter
 
 
-# 正则表达式  TODO scene
+# 正则表达式
 patt_offset = r'AudioOffset:(-*\d+)'
 patt_tap = r'\((\d+),([1-4])\);'
 patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
@@ -18,7 +18,7 @@ patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[
 patt_arctap = r'arctap\(([0-9]+)\)'
 patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
 patt_camera = r'camera\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]+),(\d+)\);'
-patt_scene = r''
+patt_scene = r'scenecontrol\((\d+),([a-z]+)(,(\d+[.\d+]*),(\d+))?\);'
 
 
 def append(noteobj, path: str):  # TODO 向aff追加note的功能——！
@@ -126,6 +126,18 @@ def __loadline(notestr: str):
     elif re.match(patt_camera, notestr):
         notepara = re.findall(patt_camera, notestr)[0]
         noteobj = note.Camera(int(notepara[0]), float(notepara[1]), float(notepara[2]), float(notepara[3]), float(notepara[4]), float(notepara[5]), float(notepara[6]), str(notepara[7]), int(notepara[8]))
+    elif re.match(patt_scene, notestr):
+        notepara = re.findall(patt_scene, notestr)[0]
+        print(notepara)
+        noteobj = note.SceneControl(int(notepara[0]), str(notepara[1]))
+        try:
+            if notepara[3]:
+                noteobj.x = float(notepara[3])
+            if notepara[4]:
+                noteobj.y = int(notepara[4])
+        except IndexError:
+            pass
+        return noteobj
     elif notestr == 'timinggroup(){':  # flag
         return '_groupbegin_'
     elif notestr == '};':

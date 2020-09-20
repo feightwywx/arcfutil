@@ -257,8 +257,35 @@ class Camera(Note):
         return self._alterself
 
 
-class SceneControl(Note):  # TODO: SceneControl语句
-    pass
+class SceneControl(Note):
+    def __init__(self, time: int, scenetype, x: float = None, y: int = None):
+        super(SceneControl, self).__init__(time)
+        self.scenetype = scenetype
+        self.x = x
+        self.y = y
+
+    def __setattr__(self, key, value):
+        super().__setattr__(key, value)
+        types = {name for name, member in SceneType.__members__.items()}
+        if type(value).__name__ != 'SceneType' and key == 'scenetype':
+            if value in types:
+                for each in SceneType:
+                    if each.value == value:
+                        self.__dict__[key] = each
+                    elif each.name == value:
+                        self.__dict__[key] = each
+            else:
+                print('Value', value, 'is invalid. Setting SceneType.trackshow.')  # TODO 抛出异常
+                self.__dict__[key] = SceneType.trackshow
+
+    def __repr__(self):
+        print(self.__dict__)
+        if self.scenetype.name in ['trackshow', 'trackhide']:
+            return 'scenecontrol({0},{1});'.format(self.time, self.scenetype.value)
+        elif self.scenetype.name in ['redline', 'arcahvdistort', 'arcahvdebris']:
+            return 'scenecontrol({0},{1},{2:.2f},{3});'.format(self.time, self.scenetype.value, self.x, int(self.y))
+        else:
+            return None
 
 
 class TimingGroup(list):
