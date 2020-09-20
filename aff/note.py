@@ -63,7 +63,7 @@ class AudioOffset(Note):  # 虽然不太合理，但还是继承了Note对象）
         self.offset = offset
 
     def __repr__(self):
-        return 'AudioOffset:{offset}'.format(offset=self.offset)
+        return 'AudioOffset:{offset}'.format(offset=int(self.offset))
 
 
 class Tap(Note):
@@ -72,7 +72,7 @@ class Tap(Note):
         self.lane: int = lane
 
     def __repr__(self):
-        return '({time},{lane});'.format(time=self.time, lane=self.lane)
+        return '({time},{lane});'.format(time=int(self.time), lane=int(self.lane))
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -90,7 +90,8 @@ class Hold(Tap):
         self._alterself = deepcopy(self)
 
     def __repr__(self):
-        return 'hold({time},{totime},{lane});'.format(time=self.time, totime=self.totime, lane=self.lane)
+        return 'hold({time},{totime},{lane});'.format(
+            time=int(self.time), totime=int(self.totime), lane=int(self.lane))
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -100,19 +101,8 @@ class Hold(Tap):
 
 
 class Arc(Note):
-    def __init__(self,
-                 time: int,
-                 totime: int,
-                 fromx: float,
-                 fromy: float,
-                 slideeasing,
-                 tox: float,
-                 toy: float,
-                 color,
-                 isskyline: bool,
-                 skynote: list,
-                 fx
-                 ):
+    def __init__(self, time: int, totime: int, fromx: float, fromy: float, slideeasing, tox: float, toy: float, color,
+                 isskyline: bool, skynote: list, fx):
         super(Arc, self).__init__(time)
         self.totime: int = totime
         self.fromx: float = fromx
@@ -128,14 +118,8 @@ class Arc(Note):
     def __repr__(self):
         arcstr = 'arc({time},{totime},{fromx:.2f},{fromy:.2f},{slideeasing},{tox:.2f},{toy:.2f},{color},{fx},' \
                  '{isskyline})'.format(
-                    time=self.time,
-                    totime=self.totime,
-                    fromx=self.fromx,
-                    fromy=self.fromy,
-                    slideeasing=self.slideeasing.value,
-                    tox=self.tox,
-                    toy=self.toy,
-                    color=self.color.value,
+                    time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
+                    slideeasing=self.slideeasing.value, tox=self.tox, toy=self.toy, color=self.color.value,
                     fx=self.fx.name,
                     isskyline='true' if self.isskyline else 'false'
                  )
@@ -143,7 +127,7 @@ class Arc(Note):
         if self.skynote:
             for i in range(len(self.skynote)):
                 eachtime = self.skynote[i]
-                skynotestr += 'arctap({time})'.format(time=eachtime)
+                skynotestr += 'arctap({time})'.format(time=int(eachtime))
                 if i != len(self.skynote) - 1:
                     skynotestr += ','
         return arcstr + ('[{0}]'.format(skynotestr) if skynotestr else '') + ';'
@@ -208,7 +192,7 @@ class Timing(Note):
         self.bar: float = bar
 
     def __repr__(self):
-        return 'timing({time},{bpm:.2f},{bar:.2f});'.format(time=self.time, bpm=self.bpm, bar=self.bar)
+        return 'timing({time},{bpm:.2f},{bar:.2f});'.format(time=int(self.time), bpm=self.bpm, bar=self.bar)
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -247,9 +231,9 @@ class Camera(Note):
     def __repr__(self):
         return 'camera({time},{trans:.2f},{bzoom:.2f},{lzoom:.2f},{stangle:.2f},{tzoom:.2f},{angle:.2f},{easing},' \
                '{lasting});'.format(
-                time=self.time, trans=self.transverse, bzoom=self.bottomzoom, lzoom=self.linezoom,
+                time=int(self.time), trans=self.transverse, bzoom=self.bottomzoom, lzoom=self.linezoom,
                 stangle=self.steadyangle, tzoom=self.topzoom, angle=self.angle, easing=self.easing.value,
-                lasting=self.lastingtime)
+                lasting=int(self.lastingtime))
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -283,7 +267,8 @@ class SceneControl(Note):
         if self.scenetype.name in ['trackshow', 'trackhide']:
             return 'scenecontrol({0},{1});'.format(self.time, self.scenetype.value)
         elif self.scenetype.name in ['redline', 'arcahvdistort', 'arcahvdebris']:
-            return 'scenecontrol({0},{1},{2:.2f},{3});'.format(self.time, self.scenetype.value, self.x, int(self.y))
+            return 'scenecontrol({0},{1},{2:.2f},{3});'.format(
+                int(self.time), self.scenetype.value, self.x, int(self.y))
         else:
             return None
 

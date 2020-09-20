@@ -17,7 +17,8 @@ patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[
              r'([a-z]+),([a-z]+)\).*;'
 patt_arctap = r'arctap\(([0-9]+)\)'
 patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
-patt_camera = r'camera\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]+),(\d+)\);'
+patt_camera = r'camera\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),' \
+              r'(-*\d+[.\d+]*),([a-z]+),(\d+)\);'
 patt_scene = r'scenecontrol\((\d+),([a-z]+)(,(\d+[.\d+]*),(\d+))?\);'
 
 
@@ -125,7 +126,9 @@ def __loadline(notestr: str):
         return noteobj
     elif re.match(patt_camera, notestr):
         notepara = re.findall(patt_camera, notestr)[0]
-        noteobj = note.Camera(int(notepara[0]), float(notepara[1]), float(notepara[2]), float(notepara[3]), float(notepara[4]), float(notepara[5]), float(notepara[6]), str(notepara[7]), int(notepara[8]))
+        noteobj = note.Camera(int(notepara[0]), float(notepara[1]), float(notepara[2]), float(notepara[3]),
+                              float(notepara[4]), float(notepara[5]), float(notepara[6]), str(notepara[7]),
+                              int(notepara[8]))
     elif re.match(patt_scene, notestr):
         notepara = re.findall(patt_scene, notestr)[0]
         print(notepara)
