@@ -263,7 +263,6 @@ class SceneControl(Note):
                 self.__dict__[key] = SceneType.trackshow
 
     def __repr__(self):
-        print(self.__dict__)
         if self.scenetype.name in ['trackshow', 'trackhide']:
             return 'scenecontrol({0},{1});'.format(self.time, self.scenetype.value)
         elif self.scenetype.name in ['redline', 'arcahvdistort', 'arcahvdebris']:

@@ -45,7 +45,6 @@ def dump(notelist: list):
 
 def dumps(notelist: list, destpath: str):
     notelist = sorter.sort(notelist)
-    print(notelist)
     isfirsthyphen = False
     with open(destpath, 'w') as faff:
         for eachline in notelist:
@@ -131,7 +130,6 @@ def __loadline(notestr: str):
                               int(notepara[8]))
     elif re.match(patt_scene, notestr):
         notepara = re.findall(patt_scene, notestr)[0]
-        print(notepara)
         noteobj = note.SceneControl(int(notepara[0]), str(notepara[1]))
         try:
             if notepara[3]:
@@ -162,5 +160,4 @@ def loads(path: str):
     with open(path, mode='r') as faff:
         for eachline in faff:
             notelist.append(__loadline(eachline[:-1]))
-    print(notelist)
     return __serialgroup(notelist)

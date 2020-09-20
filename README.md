@@ -9,11 +9,9 @@
 
 - [x] 将`.aff`中的note解析为python对象（以及将这些对象生成回`.aff`的note格式）
 
-  - [x] `AudioOffset`，`tap`，`hold`，`arc`（包含`arctap`）以及`timing`
+  - [x] 支持Arcaea谱面的所有元素！（`AudioOffset`，`tap`，`hold`，`arc`（含`arctap`），`timing`以及`camera`和`scenecontrol`）
   
   - [x] `timinggroup`支持
-
-  - [ ] `camera`和`scene`计划中
   
   - [x] 为note对象提供了谱面编辑中的常用方法（复制、镜像）
   
