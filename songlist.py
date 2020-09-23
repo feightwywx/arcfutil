@@ -512,11 +512,11 @@ def bg_copy(path: str):
 def man():
     print(
         r'''
-        arc.py
+        arfutil
         songlist generator
 
         Usage:
-        songlist [-hrpbt] <inputpath>
+        arcfutil songlist [-hrpbt] <inputpath>
         inputpath: The folder which contains Arcaea assets(e.g. /songs, /img, etc.).
         -h help: Show this help message.
         -r reverse: Generate "songconfig.txt" from "songlist" file for every song.
@@ -526,14 +526,16 @@ def man():
         ''')
 
 
-def main():
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
     logging.basicConfig(filename='soulmate.log', level=logging.DEBUG, format=LOG_FORMAT, datefmt=DATE_FORMAT)
 
     # flags
     withtempest = False
     withpacklist = False
     withbgcopy = False
-    realargv = sys.argv[1:]
+    realargv = argv[1:]
     if not len(realargv):  # Arguments not given
         man()
         sys.exit(0)
