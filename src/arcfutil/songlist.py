@@ -111,7 +111,7 @@ def parse_songlist(slpath: str) -> dict:
         with open(slpath, 'r', encoding='utf-8') as f:
             sl = json.loads(f.read())
     except FileNotFoundError:
-        logging.warning('未找到对应的songlist文件：{0}'.format(slpath))
+        logging.warning('Corresponding songlist not found: {0}'.format(slpath))
         exit(1)
     finally:
         if sl != {}:
@@ -129,7 +129,7 @@ def parse_songconfig(scpath: str) -> dict:
                 if len(linesplit) == 2:
                     sc[linesplit[0]] = linesplit[1][:-1]  # 去除行尾的\n
     except FileNotFoundError:
-        logging.warning('未找到对应的songconfig.txt文件：{0}'.format(scpath))
+        logging.warning('Corresponding songconfig.txt not found: {0}'.format(scpath))
     finally:
         return sc
 
@@ -558,6 +558,8 @@ def bg_copy(path: str):
         if song in songsfolderskiplst:
             continue
         songpath = os.path.join(songspath, song)
+        if os.path.isfile(songpath):
+            continue
         for songfile in os.listdir(songpath):
             if songfile.endswith('.jpg') and songfile not in songfolderskiplst:
                 shutil.copy(os.path.join(songpath, songfile), os.path.join(bgpath, songfile))
@@ -590,7 +592,7 @@ def man():
 def main(argv=None):
     if argv is None:
         argv = sys.argv
-    logging.basicConfig(filename='../../soulmate.log', level=logging.DEBUG, format=LOG_FORMAT, datefmt=DATE_FORMAT)
+    logging.basicConfig(filename='soulmate.log', level=logging.DEBUG, format=LOG_FORMAT, datefmt=DATE_FORMAT)
 
     # flags
     withtempest = False
@@ -616,7 +618,7 @@ def main(argv=None):
                 man()
                 sys.exit(0)
             elif opt == '-r' or opt == '--reverse':
-                logging.info('开始生成songconfig.txt')
+                logging.info('--- songconfig.txt generation begin ---')
                 gen_songconfig(assetspath)
                 sys.exit(0)
 
@@ -626,13 +628,13 @@ def main(argv=None):
                 withpacklist = True
             if opt == '-b' or opt == '--bg':
                 withbgcopy = True
-    logging.info('开始生成songlist')
+    logging.info('--- songlist generation begin ---')
     gen_songlist(assetspath, withtempest)
     if withpacklist:
-        logging.info('开始生成packlist')
+        logging.info('--- packlist generation begin ---')
         gen_packlist(assetspath, withtempest)
     if withbgcopy:
-        logging.info('开始复制背景文件')
+        logging.info('--- bg copy begin ---')
         bg_copy(assetspath)
 
 
