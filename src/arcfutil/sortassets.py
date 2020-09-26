@@ -48,9 +48,9 @@ def dl(path, destpath=None):
 def main(argv=None):
     # TODO -o 参数指定输出目录
     # TODO -s 参数指定songs目录
-    if argv:
+    if not argv:
         argv = sys.argv
-    realargv = argv[2:]
+    realargv = argv[1:]
     if not len(realargv):  # Arguments not given
         man()
         sys.exit(1)
@@ -74,7 +74,7 @@ def main(argv=None):
 def man():
     print(
         r'''
-        arfutil
+        arcfutil
         assets sorter
 
         Usage:

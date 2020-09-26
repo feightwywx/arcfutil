@@ -489,6 +489,7 @@ def gen_songconfig(path: str):
     slpath = os.path.join(path, 'songs', 'songlist')
     sl = parse_songlist(slpath)
     songs = sl['songs']
+    count = 0
     for eachsong in songs:  # Generate songconfig.txt for one song
         # eachsong is dict
         if eachsong['id'] == 'tempestissimo':
@@ -500,10 +501,12 @@ def gen_songconfig(path: str):
             with open(songpath, "w", encoding="utf-8") as scfile:
                 scfile.write(songconfig)
         except FileNotFoundError:
-            print('[WARN]Folder of song', eachsong['id'],
+            print('[WARN] Folder of song', eachsong['id'],
                   'does not exist. File will be wrote to /songs/{id}.txt.'.format(id=eachsong['id']))
             with open(altsongpath, "w", encoding="utf-8") as scfile:
                 scfile.write(songconfig)
+        count += 1
+    print('Generated', count, 'songconfig(s) successfully.')
 
 
 def gen_packlist(path: str, withtempest: bool = False):
@@ -570,7 +573,7 @@ def bg_copy(path: str):
 def man():
     print(
         r'''
-        arfutil
+        arcfutil
         songlist generator
 
         Usage:
@@ -587,7 +590,7 @@ def man():
 def main(argv=None):
     if argv is None:
         argv = sys.argv
-    logging.basicConfig(filename='soulmate.log', level=logging.DEBUG, format=LOG_FORMAT, datefmt=DATE_FORMAT)
+    logging.basicConfig(filename='../../soulmate.log', level=logging.DEBUG, format=LOG_FORMAT, datefmt=DATE_FORMAT)
 
     # flags
     withtempest = False
