@@ -4,6 +4,13 @@
 
 为处理Arcaea相关文件（谱面，songlist，etc.）设计的Python模块。
 
+## 安装
+
+使用pip进行安装：
+```commandline
+pip install -U arcfutil
+```
+
 ## 功能
 ~~同时也是Todo list~~
 
@@ -15,7 +22,7 @@
   
   - [x] 为note对象提供了谱面编辑中的常用方法（复制、镜像）
   
-  - [ ] 切蛇方法
+  - [ ] 切蛇方法（计划中）
   
   - [ ] selector（计划中）
 
@@ -30,3 +37,7 @@
   - [x] 自动生成`packlist`
 
   - [x] 自动复制曲目背景
+  
+## 用法
+  
+请参阅[文档](https://github.com/feightwywx/arcfutil/wiki)。
