@@ -58,6 +58,7 @@ sl_singlekeys_indiff = (
     'jacket_night',
     'rating',
     'hidden_until_unlocked',
+    'ratingPlus'
 )
 
 songsfolderskiplst = (
@@ -85,7 +86,8 @@ boolvaluelst = (
     'ratingPlus',
     'jacketOverride',
     'hidden_until_unlocked',
-    'songlist_hidden'
+    'songlist_hidden',
+    'ratingPlus'
 )
 
 songfolderskiplst = (
@@ -140,6 +142,10 @@ def songlist2songconfig(eachsong: dict) -> str:
 
             if skey == 'no_pp':
                 songconfig += 'nopp={0}\n'.format(eachsong['no_pp'])
+                continue
+
+            if skey == 'bpm':
+                songconfig += 'bpm_disp={0}\n'.format(eachsong['bpm'])
                 continue
 
             if skey == 'title_localized':
@@ -221,7 +227,10 @@ def songlist2songconfig(eachsong: dict) -> str:
                 if skey_indiff == 'chartDesigner':  # Compatible with Brcbeb Soulmate
                     songconfig += 'designer_{0}={1}\n'.format(ratingclass, str(eachdiff[skey_indiff]))
                     continue
+            except KeyError:
+                pass
 
+            try:
                 if skey_indiff == 'jacketDesigner':
                     songconfig += 'jacketdesigner_{0}={1}\n'.format(ratingclass, str(eachdiff[skey_indiff]))
                     continue
@@ -245,6 +254,10 @@ def songconfig2songlist(eachsong: dict) -> OrderedDict:
 
             if skey == 'no_pp':
                 songlist['no_pp'] = bool(eachsong['nopp'])
+                continue
+
+            if skey == 'bpm':
+                songlist['bpm'] = eachsong['bpm_disp']
                 continue
 
             if skey == 'title_localized':
@@ -352,22 +365,24 @@ def songconfig2songlist(eachsong: dict) -> OrderedDict:
 
                 if skey_diff == 'chartDesigner':
                     try:
-                        songlist_ratingclass['chartDesigner'] = eachsong['designer']
+                        songlist_ratingclass['chartDesigner'] = eachsong['designer_{0}'.format(eachratingclass)]
                     except KeyError:
                         songlist_ratingclass[skey_diff] = ''
                     try:
-                        songlist_ratingclass['chartDesigner'] = eachsong['designer_{0}'.format(eachratingclass)]
+                        if not songlist_ratingclass['chartDesigner']:
+                            songlist_ratingclass['chartDesigner'] = eachsong['designer']
                     except KeyError:
                         songlist_ratingclass[skey_diff] = ''
                     continue
 
                 if skey_diff == 'jacketDesigner':
                     try:
-                        songlist_ratingclass['jacketDesigner'] = eachsong['jacketdesigner']
+                        songlist_ratingclass['jacketDesigner'] = eachsong['jacketdesigner_{0}'.format(eachratingclass)]
                     except KeyError:
                         songlist_ratingclass[skey_diff] = ''
                     try:
-                        songlist_ratingclass['jacketDesigner'] = eachsong['jacketdesigner_{0}'.format(eachratingclass)]
+                        if not songlist_ratingclass['jacketDesigner']:
+                            songlist_ratingclass['jacketDesigner'] = eachsong['jacketdesigner']
                     except KeyError:
                         songlist_ratingclass[skey_diff] = ''
                     continue
@@ -428,6 +443,7 @@ def gen_songlist(path: str, withtempest: bool = False):
         )
     songlist = {'songs': songlistsongs}
     sl = json.dumps(songlist, ensure_ascii=False, indent=2)
+    print(songlistpath)
     with open(songlistpath, 'w', encoding='utf-8') as slfile:
         slfile.write(sl)
     print('生成的songlist包含曲目数：{0}'.format(len(songlist['songs'])))
@@ -444,8 +460,15 @@ def gen_songconfig(path: str):
             continue
         songconfig = songlist2songconfig(eachsong)
         songpath = os.path.join(songspath, eachsong['id'], 'songconfig.txt')
-        with open(songpath, "w", encoding="utf-8") as scfile:
-            scfile.write(songconfig)
+        altsongpath = os.path.join(songspath, eachsong['id'] + '.txt')
+        try:
+            with open(songpath, "w", encoding="utf-8") as scfile:
+                scfile.write(songconfig)
+        except FileNotFoundError:
+            print('[WARN]Folder of song', eachsong['id'],
+                  'does not exist. File will be wrote to /songs/{id}.txt.'.format(id=eachsong['id']))
+            with open(altsongpath, "w", encoding="utf-8") as scfile:
+                scfile.write(songconfig)
 
 
 def gen_packlist(path: str, withtempest: bool = False):
