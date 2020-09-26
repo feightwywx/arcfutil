@@ -13,6 +13,9 @@ from collections import OrderedDict
 import time
 import logging
 
+# TODO 优化/重构
+# 兄弟们，什么他妈的叫他妈的屎山啊？
+
 sl_langkeys = (
     'en',
     'ja',
@@ -132,7 +135,6 @@ def parse_songconfig(scpath: str) -> dict:
 
 
 def songlist2songconfig(eachsong: dict) -> str:
-    # TODO: ratingPlus 写入支持
     songconfig = ''
     for skey in sl_singlekeys:
         try:
@@ -203,11 +205,12 @@ def songlist2songconfig(eachsong: dict) -> str:
             max_ratingclass = 0
             for eachrating in diff:
                 singlerate = str(eachrating['rating'])
-                try:
-                    if eachrating['ratingPlus']:
-                        singlerate += '+'
-                except KeyError:
-                    pass
+                # 已废弃：如果有ratingPlus，在数值后添加+
+                # try:
+                #     if eachrating['ratingPlus']:
+                #         singlerate += '+'
+                # except KeyError:
+                #     pass
                 ratings.append(singlerate)
                 max_ratingclass = eachrating['ratingClass']
             songconfig_diff = ''
@@ -219,6 +222,30 @@ def songlist2songconfig(eachsong: dict) -> str:
                 except IndexError:
                     pass
             songconfig += 'diff={0}\n'.format(songconfig_diff)
+            continue
+
+        if skey_indiff == 'ratingPlus':
+            pluses = []
+            max_ratingclass = 0
+            for eachrating in diff:
+                if 'ratingPlus' in eachrating:
+                    singleplus = bool(eachrating['ratingPlus'])
+                else:
+                    singleplus = False
+                pluses.append(singleplus)
+                max_ratingclass = eachrating['ratingClass']
+            songconfig_diff = ''
+            for i in range(max_ratingclass + 1):
+                try:
+                    if pluses[i]:
+                        songconfig_diff += '1'
+                    else:
+                        songconfig_diff += '0'
+                    if i != max_ratingclass:  # last diff int don't have '-' after it
+                        songconfig_diff += '-'
+                except IndexError:
+                    pass
+            songconfig += 'diff_plus={0}\n'.format(songconfig_diff)
             continue
 
         for eachdiff in diff:
@@ -243,7 +270,6 @@ def songlist2songconfig(eachsong: dict) -> str:
 
 
 def songconfig2songlist(eachsong: dict) -> OrderedDict:
-    # TODO: ratingPlus_x 读取支持
     timestamp = int(time.time())
     songlist = OrderedDict()
     for skey in sl_singlekeys:
@@ -344,10 +370,17 @@ def songconfig2songlist(eachsong: dict) -> OrderedDict:
 
     songlist_diff = []
     difficultylst = eachsong['diff'].split('-')
+    try:
+        pluslst = eachsong['diff_plus'].split('-')
+    except KeyError:
+        pluslst = None
     difficultylstlen = len(difficultylst)
     for eachratingclass in range(difficultylstlen):
         songlist_ratingclass = OrderedDict()
         currentdiff = difficultylst[eachratingclass]
+        currentplus = None
+        if pluslst:
+            currentplus = int(pluslst[eachratingclass])
         for skey_diff in sl_singlekeys_indiff:
             try:
                 if skey_diff == 'ratingClass':
@@ -360,8 +393,11 @@ def songconfig2songlist(eachsong: dict) -> OrderedDict:
                         songlist_ratingclass['ratingPlus'] = True
                     else:
                         songlist_ratingclass['rating'] = int(currentdiff)
-                    pass
                     continue
+
+                if skey_diff == 'ratingPlus':
+                    if currentplus:
+                        songlist_ratingclass['ratingPlus'] = True
 
                 if skey_diff == 'chartDesigner':
                     try:
@@ -443,10 +479,9 @@ def gen_songlist(path: str, withtempest: bool = False):
         )
     songlist = {'songs': songlistsongs}
     sl = json.dumps(songlist, ensure_ascii=False, indent=2)
-    print(songlistpath)
     with open(songlistpath, 'w', encoding='utf-8') as slfile:
         slfile.write(sl)
-    print('生成的songlist包含曲目数：{0}'.format(len(songlist['songs'])))
+    print('Song count in generated songlist: {0}'.format(len(songlist['songs'])))
 
 
 def gen_songconfig(path: str):
@@ -509,7 +544,7 @@ def gen_packlist(path: str, withtempest: bool = False):
     packlist = json.dumps({'packs': packslist}, ensure_ascii=False, indent=2)
     with open(packlistpath, 'w', encoding='utf-8') as plf:
         plf.write(packlist)
-        print('生成的曲包数：{0}'.format(len(packslist)))
+        print('Pack count in generated packlist: {0}'.format(len(packslist)))
 
 
 def bg_copy(path: str):
@@ -525,11 +560,11 @@ def bg_copy(path: str):
                 shutil.copy(os.path.join(songpath, songfile), os.path.join(bgpath, songfile))
                 copiedbg.append(songfile)
     if copiedbg:
-        print('已复制自定义背景列表：')
+        print('Copied background:')
         for each in copiedbg:
             print(each)
     else:
-        print('没有要复制的自定义背景')
+        print('[WARN] No custom background copied.')
 
 
 def man():
