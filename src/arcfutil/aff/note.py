@@ -53,6 +53,12 @@ class Note:
         self.type = type(self).__name__
         self._alterself = None  # Temp
 
+    def moveto(self, dest: int):
+        self.time = dest
+
+    def offsetto(self, value: int):
+        self.time += value
+
     def type(self):
         return type(self).__name__
 
@@ -64,6 +70,12 @@ class AudioOffset(Note):  # 虽然不太合理，但还是继承了Note对象）
 
     def __repr__(self):
         return 'AudioOffset:{offset}'.format(offset=int(self.offset))
+
+    def moveto(self, dest: int):
+        pass
+
+    def offsetto(self, value: int):
+        pass
 
 
 class Tap(Note):
@@ -99,10 +111,19 @@ class Hold(Tap):
         self._alterself.totime += dest - self.time
         return self._alterself
 
+    def moveto(self, dest: int):
+        time = self.time
+        super().moveto(dest)
+        self.totime += self.time - time
+
+    def offsetto(self, value: int):
+        super(Hold, self).offsetto(value)
+        self.totime += value
+
 
 class Arc(Note):
     def __init__(self, time: int, totime: int, fromx: float, fromy: float, slideeasing, tox: float, toy: float, color,
-                 isskyline: bool, skynote: list, fx):
+                 isskyline, skynote: list, fx):
         super(Arc, self).__init__(time)
         self.totime: int = totime
         self.fromx: float = fromx
@@ -171,7 +192,16 @@ class Arc(Note):
                 self.__dict__[key] = FX.none
 
         if key == 'skynote' and value:
+            if value:
+                for each in enumerate(value):
+                    value[each[0]] = int(each[1])
             self.__dict__[key] = sorted(value)
+
+        if key == 'isskyline':
+            if value == 'true':
+                self.__dict__[key] = True
+            elif value == 'false':
+                self.__dict__[key] = False
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -179,10 +209,26 @@ class Arc(Note):
         self._alterself.totime += dest - self.time
         return self._alterself
 
+    def moveto(self, dest: int):
+        originaltime = self.time
+        self.time = dest
+        lasting = self.time - originaltime
+        self.totime += lasting
+        if self.skynote:
+            for each in enumerate(self.skynote):
+                self.skynote[each[0]] += lasting
+
     def mirror(self):
         # more magic number))
         self.fromx = 1 - self.fromx
         self.tox = 1 - self.fromx
+
+    def offsetto(self, value: int):
+        super(Arc, self).offsetto(value)
+        self.totime += value
+        if self.skynote:
+            for each in enumerate(self.skynote):
+                self.skynote[each[0]] += value
 
 
 class Timing(Note):
@@ -211,7 +257,7 @@ class Camera(Note):
         self.topzoom: float = topzoom
         self.angle: float = angle
         self.easing: CameraEasing = easing
-        self.lastingtime: float = lastingtime
+        self.lastingtime: int = lastingtime
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
@@ -292,6 +338,22 @@ class TimingGroup(list):
             group += '\n{0}'.format(each)
         group += '\n};'
         return group
+
+    def moveto(self, dest: int):
+        for each in self:
+            if each:
+                each.moveto(dest)
+
+    def offsetto(self, value: int):
+        basebpm = 0
+        for each in self:
+            if type(each).__name__ == 'Timing' and each.time == 0:
+                basebpm = each.bpm
+
+        for each in self:
+            if each:
+                each.offsetto(value)
+        self.append(Timing(0, basebpm, 4))
 
     def type(self):
         return type(self).__name__
