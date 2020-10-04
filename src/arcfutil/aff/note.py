@@ -122,7 +122,7 @@ class Hold(Tap):
 
 
 class Arc(Note):
-    def __init__(self, time: int, totime: int, fromx: float, fromy: float, slideeasing, tox: float, toy: float, color,
+    def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing, fromy: float, toy: float, color,
                  isskyline, skynote: list, fx):
         super(Arc, self).__init__(time)
         self.totime: int = totime
@@ -137,7 +137,7 @@ class Arc(Note):
         self.fx: FX = fx
 
     def __repr__(self):
-        arcstr = 'arc({time},{totime},{fromx:.2f},{fromy:.2f},{slideeasing},{tox:.2f},{toy:.2f},{color},{fx},' \
+        arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
                  '{isskyline})'.format(
                     time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
                     slideeasing=self.slideeasing.value, tox=self.tox, toy=self.toy, color=self.color.value,
