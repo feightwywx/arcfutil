@@ -9,12 +9,7 @@ from . import parser
 from . import sorter
 
 # note
-SlideEasing = note.SlideEasing
-FX = note.FX
-ArcColor = note.ArcColor
 AudioOffset = note.AudioOffset
-CameraEasing = note.CameraEasing
-SceneType = note.SceneType
 Tap = note.Tap
 Hold = note.Hold
 Arc = note.Arc
@@ -35,8 +30,8 @@ def hold(time: int, totime: int, lane: int):
     return note.Hold(time, totime, lane)
 
 
-def arc(time: int, totime: int, fromx: float, tox: float, slideeasing, fromy: float, toy: float,
-        color, isskyline, skynote: list = None, fx: FX = FX.none):
+def arc(time: int, totime: int, fromx: float, tox: float, slideeasing: str, fromy: float, toy: float,
+        color: int, isskyline: bool, skynote: list = None, fx: str = 'none'):
     return note.Arc(time, totime, fromx, fromy, slideeasing, tox, toy, color, isskyline, skynote, fx)
 
 
@@ -45,11 +40,11 @@ def timing(time: int, bpm: float, bar: float = 4):
 
 
 def camera(time: int, transverse: float, bottomzoom: float, linezoom: float, steadyangle: float, topzoom: float,
-           angle: float, easing, lastingtime: int):
+           angle: float, easing: str, lastingtime: int):
     return note.Camera(time, transverse, bottomzoom, linezoom, steadyangle, topzoom, angle, easing, lastingtime)
 
 
-def scenecontrol(time: int, scenetype, x: float = None, y: int = None):
+def scenecontrol(time: int, scenetype: str, x: float = None, y: int = None):
     return note.SceneControl(time, scenetype, x, y)
 
 

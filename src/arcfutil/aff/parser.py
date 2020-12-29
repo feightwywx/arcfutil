@@ -94,17 +94,6 @@ def __loadline(notestr: str):
         noteeasing, notecolor, notefx = None, None, None
         arctap = re.findall(patt_arctap, notestr)
 
-        # 转换为枚举类型
-        for each in note.SlideEasing:
-            if each.value == notepara[4]:
-                noteeasing = each
-        for each in note.ArcColor:
-            if each.value == int(notepara[7]):
-                notecolor = each
-        for each in note.FX:
-            if each.value == notepara[8]:
-                notefx = each
-
         noteobj = note.Arc(time=int(notepara[0]), totime=int(notepara[1]), fromx=float(notepara[2]),
                            tox=float(notepara[3]), fromy=float(notepara[5]), toy=float(notepara[6]),
                            slideeasing=notepara[4], color=int(notepara[7]), fx=notepara[8],
