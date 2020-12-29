@@ -5,6 +5,7 @@
 # Licensed under the MIT License.
 
 from copy import deepcopy
+from .easing import slicer
 
 
 slideeasinglist = [
@@ -129,6 +130,34 @@ class Arc(Note):
         self.isskyline: bool = isskyline
         self.skynote: list = skynote
         self.fx: str = fx
+
+    def __getitem__(self, item):
+        x_type = 's'
+        y_type = 's'
+        se = self.slideeasing
+
+        if len(se) < 3 and se not in ['bb', 'bs', 'sb']:
+            x_type = se
+            if se == 'b':
+                y_type = 'b'
+        else:
+            if se.startswith('b'):
+                x_type = 'b'
+            elif se.startswith('si'):
+                x_type = 'si'
+            elif se.startswith('so'):
+                x_type = 'so'
+
+            if se.endswith('b'):
+                y_type = 'b'
+            elif se.endswith('si'):
+                y_type = 'si'
+            elif se.endswith('so'):
+                y_type = 'so'
+
+        slice_x = slicer(item, self.time, self.totime, self.fromx, self.tox, x_type)
+        slice_y = slicer(item, self.time, self.totime, self.fromy, self.toy, y_type)
+        return slice_x, slice_y
 
     def __str__(self):
         arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
