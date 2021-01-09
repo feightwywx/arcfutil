@@ -130,7 +130,7 @@ def __loadline(notestr: str):
         return noteobj
     elif notestr == 'timinggroup(){':  # flag
         return '_groupbegin_'
-    elif notestr == '};':
+    elif notestr == '}':
         return '_groupend_'
 
     return noteobj
@@ -148,5 +148,5 @@ def loads(path: str):
     notelist = []
     with open(path, mode='r') as faff:
         for eachline in faff:
-            notelist.append(__loadline(eachline[:-1]))
+            notelist.append(__loadline(eachline[:-1].strip()))
     return __serialgroup(notelist)
