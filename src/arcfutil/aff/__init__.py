@@ -32,7 +32,7 @@ def hold(time: int, totime: int, lane: int):
 
 def arc(time: int, totime: int, fromx: float, tox: float, slideeasing: str, fromy: float, toy: float,
         color: int, isskyline: bool, skynote: list = None, fx: str = 'none'):
-    return note.Arc(time, totime, fromx, fromy, slideeasing, tox, toy, color, isskyline, skynote, fx)
+    return note.Arc(time, totime, fromx, tox, slideeasing, fromy, toy, color, isskyline, skynote, fx)
 
 
 def timing(time: int, bpm: float, bar: float = 4):
