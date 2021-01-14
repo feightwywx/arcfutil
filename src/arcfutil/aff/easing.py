@@ -26,7 +26,7 @@ def sine(percent):
 
 
 def cosine(percent):
-    return cos(percent * (pi / 2))
+    return cos((percent * (pi / 2)) - (pi / 2))
 
 
 def bezier(percent):
