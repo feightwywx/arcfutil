@@ -10,11 +10,11 @@ from math import cos
 from math import pi
 
 
-def __checker(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        return func(*args, **kwargs)
-    return decorated
+# def __checker(func):
+#     @wraps(func)
+#     def decorated(*args, **kwargs):
+#         return func(*args, **kwargs)
+#     return decorated
 
 
 def linar(percent):
@@ -34,7 +34,7 @@ def bezier(percent):
     return 3 * (1 - t) * pow(t, 2) + pow(t, 3)  # Bezier公式 0 0 1 1
 
 
-@__checker
+# @__checker
 def slicer(time, fromtime, totime, fromposition, toposition, easingtype='s'):
     t_offset = fromtime
     p_offset = fromposition

@@ -91,7 +91,6 @@ def __loadline(notestr: str):
         noteobj = note.Hold(time=int(notepara[0]), totime=int(notepara[1]), lane=int(notepara[2]))
     elif re.match(patt_arc, notestr):
         notepara = re.findall(patt_arc, notestr)[0]
-        noteeasing, notecolor, notefx = None, None, None
         arctap = re.findall(patt_arctap, notestr)
 
         noteobj = note.Arc(time=int(notepara[0]), totime=int(notepara[1]), fromx=float(notepara[2]),
@@ -100,14 +99,11 @@ def __loadline(notestr: str):
                            isskyline=notepara[9], skynote=arctap)
 
         # 如果不为None就设置属性
-        if noteeasing:
-            noteobj.slideeasing = noteeasing
-        if notecolor:
-            noteobj.color = notecolor
-        if notefx:
-            noteobj.fx = notefx
         if arctap:
             noteobj.skynote = arctap
+        # fx的none标准化
+        if noteobj.fx == 'none':
+            noteobj.fx = None
     elif re.match(patt_timing, notestr):
         notepara = re.findall(patt_timing, notestr)[0]
         noteobj = note.Timing(time=int(notepara[0]), bpm=float(notepara[1]), bar=float(notepara[2]))

@@ -6,6 +6,7 @@
 
 from copy import deepcopy
 from .easing import slicer
+from .exception import *
 
 
 slideeasinglist = [
@@ -118,7 +119,7 @@ class Hold(Tap):
 
 class Arc(Note):
     def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: str, fromy: float, toy: float,
-                 color: int, isskyline: bool, skynote: list, fx: str):
+                 color: int, isskyline: bool, skynote: list = None, fx=None):
         super(Arc, self).__init__(time)
         self.totime = totime
         self.fromx: float = fromx
@@ -154,17 +155,44 @@ class Arc(Note):
                 y_type = 'si'
             elif se.endswith('so'):
                 y_type = 'so'
+        if isinstance(item, slice):
+            start = item.start if item.start else self.time
+            stop = item.stop if item.stop else self.totime
+            step = item.step if item.step else (stop - start)
+            length = len(self)
+            if stop < start:
+                raise AffNoteValueError('start time is before stop time')
+            elif step < 0:
+                raise AffNoteValueError('step smaller than zero')
 
-        slice_x = slicer(item, self.time, self.totime, self.fromx, self.tox, x_type)
-        slice_y = slicer(item, self.time, self.totime, self.fromy, self.toy, y_type)
-        return slice_x, slice_y
+            notelist = []
+            while start < stop:
+                slice_x = slicer(start + step, self.time, self.totime, self.fromx, self.tox, x_type)
+                slice_y = slicer(start + step, self.time, self.totime, self.fromy, self.toy, y_type)
+                notelist.append(Arc(start, start + step, self.fromx, slice_x, 's', self.fromy, slice_y, self.color,
+                                    self.isskyline))
+                start += step
+            return notelist
+
+        else:
+            slice_x = slicer(item, self.time, self.totime, self.fromx, self.tox, x_type)
+            slice_y = slicer(item, self.time, self.totime, self.fromy, self.toy, y_type)
+            arc = deepcopy(self)
+            self.fromx = slice_x
+            self.fromy = slice_y
+            self.tox = slice_x
+            self.toy = slice_y
+            return arc
+
+    def __len__(self):
+        return self.totime - self.time
 
     def __str__(self):
         arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
                  '{isskyline})'.format(
                   time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
-                  slideeasing=self.slideeasing, tox=self.tox, toy=self.toy, color=int(self.color), fx=self.fx,
-                  isskyline='true' if self.isskyline else 'false'
+                  slideeasing=self.slideeasing, tox=self.tox, toy=self.toy, color=int(self.color),
+                  fx=self.fx if self.fx else 'none', isskyline='true' if self.isskyline else 'false'
                   )
         skynotestr = ''
         if self.skynote:
@@ -218,7 +246,7 @@ class Arc(Note):
 
 
 class Timing(Note):
-    def __init__(self, time: int, bpm: float, bar: float):
+    def __init__(self, time: int, bpm: float, bar: float = 4):
         super(Timing, self).__init__(time)
         self.bpm: float = bpm
         self.bar: float = bar
@@ -278,7 +306,6 @@ class SceneControl(Note):
 class TimingGroup(list):
     def __init__(self, tup):
         super().__init__(tup)
-        self.type = type(self).__name__
 
     def __getattr__(self, item):
         # 把timinggroup中time最小且非零元素的time属性，当作整个timinggroup的属性
