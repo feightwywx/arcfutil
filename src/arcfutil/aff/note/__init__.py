@@ -13,3 +13,4 @@ from .note import Timing
 from .note import Camera
 from .note import SceneControl
 from .note import TimingGroup
+from .note import Flick

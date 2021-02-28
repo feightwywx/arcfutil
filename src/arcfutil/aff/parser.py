@@ -17,6 +17,7 @@ patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
 patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([0-2]),' \
              r'([a-z]+),([a-z]+)\).*;'
 patt_arctap = r'arctap\(([0-9]+)\)'
+patt_flick = r'flick\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*)\);'
 patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
 patt_camera = r'camera\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),' \
               r'(-*\d+[.\d+]*),([a-z]+),(\d+)\);'
@@ -109,6 +110,12 @@ def __loadline(notestr: str):
         # fx的none标准化
         if noteobj.fx == 'none':
             noteobj.fx = None
+    elif re.match(patt_flick, notestr):
+        notepara = re.findall(patt_flick, notestr)[0]
+        print(notepara)
+        noteobj = note.Flick(time=int(notepara[0]), x=float(notepara[1]), y=float(notepara[1]), dx=float(notepara[2]),
+                             dy=float(notepara[3]))
+        return noteobj
     elif re.match(patt_timing, notestr):
         notepara = re.findall(patt_timing, notestr)[0]
         noteobj = note.Timing(time=int(notepara[0]), bpm=float(notepara[1]), bar=float(notepara[2]))
