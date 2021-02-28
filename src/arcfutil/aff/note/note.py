@@ -6,8 +6,7 @@
 
 from copy import deepcopy
 from .easing import slicer
-from .exception import *
-
+from ...exception import *
 
 slideeasinglist = [
     'b',
@@ -21,7 +20,6 @@ slideeasinglist = [
 ]
 
 fxlist = [
-    'none',  # TODO: none改成Python的None
     'full',
     'incremental'
 ]
@@ -159,7 +157,6 @@ class Arc(Note):
             start = item.start if item.start else self.time
             stop = item.stop if item.stop else self.totime
             step = item.step if item.step else (stop - start)
-            length = len(self)
             if stop < start:
                 raise AffNoteValueError('start time is before stop time')
             elif step < 0:
@@ -210,12 +207,6 @@ class Arc(Note):
                 for each in enumerate(value):
                     value[each[0]] = int(each[1])
             self.__dict__[key] = sorted(value)
-
-        if key == 'isskyline':
-            if value == 'true':
-                self.__dict__[key] = True
-            elif value == 'false':
-                self.__dict__[key] = False
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)

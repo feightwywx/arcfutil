@@ -5,6 +5,7 @@
 # Licensed under the MIT License.
 
 import re
+from ..exception import *
 from . import note
 from . import sorter
 
@@ -20,10 +21,6 @@ patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
 patt_camera = r'camera\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),' \
               r'(-*\d+[.\d+]*),([a-z]+),(\d+)\);'
 patt_scene = r'scenecontrol\((\d+),([a-z]+)(,(\d+[.\d+]*),(\d+))?\);'
-
-
-def append(noteobj, path: str):  # TODO 向aff追加note的功能——！
-    pass
 
 
 def __dumpline(noteobj: note.Note):
@@ -101,6 +98,14 @@ def __loadline(notestr: str):
         # 如果不为None就设置属性
         if arctap:
             noteobj.skynote = arctap
+        # isskyline标准化
+        if noteobj.isskyline == 'true':
+            noteobj.isskyline = True
+        elif noteobj.isskyline == 'false':
+            noteobj.isskyline = False
+        else:
+            raise AffReadError(''.join([notestr,
+                                        ': Only \'true\' or \'false\' is accepted for property \'isskyline\'']))
         # fx的none标准化
         if noteobj.fx == 'none':
             noteobj.fx = None
@@ -128,6 +133,9 @@ def __loadline(notestr: str):
         return '_groupbegin_'
     elif notestr == '};':
         return '_groupend_'
+    else:
+        if not notestr.strip():
+            raise AffReadError(''.join(['Invalid syntax:', notestr]))
 
     return noteobj
 
