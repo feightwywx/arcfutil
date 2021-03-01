@@ -95,6 +95,24 @@ class Hold(Tap):
         self.totime = totime
         self._alterself = deepcopy(self)
 
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            start = item.start if item.start else self.time
+            stop = item.stop if item.stop else self.totime
+            step = item.step if item.step else (stop - start)
+            if stop < start:
+                raise AffNoteIndexError('start time is before stop time')
+            elif step < 0:
+                raise AffNoteIndexError('step smaller than zero')
+
+            notelist = []
+            while start < stop:
+                notelist.append(Hold(start, start + step, self.lane))
+                start += step
+            return notelist[0] if len(notelist) == 1 else notelist
+        else:
+            raise AffNoteIndexError('Hold indices must be slices')
+
     def __str__(self):
         return 'hold({time},{totime},{lane});'.format(
             time=int(self.time), totime=int(self.totime), lane=int(self.lane))
@@ -158,9 +176,9 @@ class Arc(Note):
             stop = item.stop if item.stop else self.totime
             step = item.step if item.step else (stop - start)
             if stop < start:
-                raise AffNoteValueError('start time is before stop time')
+                raise AffNoteIndexError('start time is before stop time')
             elif step < 0:
-                raise AffNoteValueError('step smaller than zero')
+                raise AffNoteIndexError('step smaller than zero')
 
             notelist = []
             while start < stop:
@@ -169,7 +187,7 @@ class Arc(Note):
                 notelist.append(Arc(start, start + step, self.fromx, slice_x, 's', self.fromy, slice_y, self.color,
                                     self.isskyline))
                 start += step
-            return notelist
+            return notelist[0] if len(notelist) == 1 else notelist
 
         else:
             slice_x = slicer(item, self.time, self.totime, self.fromx, self.tox, x_type)
