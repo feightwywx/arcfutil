@@ -3,3 +3,5 @@
 
 # Author: .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
+
+from . import exception

@@ -5,6 +5,7 @@
 # Licensed under the MIT License.
 
 import re
+from ..exception import *
 from . import note
 from . import sorter
 
@@ -16,14 +17,11 @@ patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
 patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([0-2]),' \
              r'([a-z]+),([a-z]+)\).*;'
 patt_arctap = r'arctap\(([0-9]+)\)'
+patt_flick = r'flick\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*)\);'
 patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
 patt_camera = r'camera\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),' \
               r'(-*\d+[.\d+]*),([a-z]+),(\d+)\);'
 patt_scene = r'scenecontrol\((\d+),([a-z]+)(,(\d+[.\d+]*),(\d+))?\);'
-
-
-def append(noteobj, path: str):  # TODO 向aff追加note的功能——！
-    pass
 
 
 def __dumpline(noteobj: note.Note):
@@ -91,19 +89,7 @@ def __loadline(notestr: str):
         noteobj = note.Hold(time=int(notepara[0]), totime=int(notepara[1]), lane=int(notepara[2]))
     elif re.match(patt_arc, notestr):
         notepara = re.findall(patt_arc, notestr)[0]
-        noteeasing, notecolor, notefx = None, None, None
         arctap = re.findall(patt_arctap, notestr)
-
-        # 转换为枚举类型
-        for each in note.SlideEasing:
-            if each.value == notepara[4]:
-                noteeasing = each
-        for each in note.ArcColor:
-            if each.value == int(notepara[7]):
-                notecolor = each
-        for each in note.FX:
-            if each.value == notepara[8]:
-                notefx = each
 
         noteobj = note.Arc(time=int(notepara[0]), totime=int(notepara[1]), fromx=float(notepara[2]),
                            tox=float(notepara[3]), fromy=float(notepara[5]), toy=float(notepara[6]),
@@ -111,14 +97,25 @@ def __loadline(notestr: str):
                            isskyline=notepara[9], skynote=arctap)
 
         # 如果不为None就设置属性
-        if noteeasing:
-            noteobj.slideeasing = noteeasing
-        if notecolor:
-            noteobj.color = notecolor
-        if notefx:
-            noteobj.fx = notefx
         if arctap:
             noteobj.skynote = arctap
+        # isskyline标准化
+        if noteobj.isskyline == 'true':
+            noteobj.isskyline = True
+        elif noteobj.isskyline == 'false':
+            noteobj.isskyline = False
+        else:
+            raise AffReadError(''.join([notestr,
+                                        ': Only \'true\' or \'false\' is accepted for property \'isskyline\'']))
+        # fx的none标准化
+        if noteobj.fx == 'none':
+            noteobj.fx = None
+    elif re.match(patt_flick, notestr):
+        notepara = re.findall(patt_flick, notestr)[0]
+        print(notepara)
+        noteobj = note.Flick(time=int(notepara[0]), x=float(notepara[1]), y=float(notepara[1]), dx=float(notepara[2]),
+                             dy=float(notepara[3]))
+        return noteobj
     elif re.match(patt_timing, notestr):
         notepara = re.findall(patt_timing, notestr)[0]
         noteobj = note.Timing(time=int(notepara[0]), bpm=float(notepara[1]), bar=float(notepara[2]))
@@ -143,6 +140,9 @@ def __loadline(notestr: str):
         return '_groupbegin_'
     elif notestr == '};':
         return '_groupend_'
+    else:
+        if not notestr.strip():
+            raise AffReadError(''.join(['Invalid syntax:', notestr]))
 
     return noteobj
 
@@ -159,5 +159,5 @@ def loads(path: str):
     notelist = []
     with open(path, mode='r') as faff:
         for eachline in faff:
-            notelist.append(__loadline(eachline[:-1]))
+            notelist.append(__loadline(eachline.strip()))
     return __serialgroup(notelist)

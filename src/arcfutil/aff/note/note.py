@@ -4,52 +4,46 @@
 # Author: .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
-from enum import Enum
 from copy import deepcopy
+from .easing import slicer
+from ...exception import *
 
+slideeasinglist = [
+    'b',
+    's',
+    'si',
+    'so',
+    'sisi',
+    'soso',
+    'sosi',
+    'soso'
+]
 
-class SlideEasing(Enum):
-    b = 'b'
-    s = 's'
-    si = 'si'
-    so = 'so'
-    sisi = 'sisi'
-    siso = 'siso'
-    sosi = 'sosi'
-    soso = 'soso'
+fxlist = [
+    'full',
+    'incremental'
+]
 
+cameraeasinglist = [
+    'qi',
+    'qo',
+    'l',
+    'reset',
+    's'
+]
 
-class FX(Enum):
-    none = 'none'
-    full = 'full'
-    incremental = 'incremental'
-
-
-class ArcColor(Enum):
-    blue = 0
-    red = 1
-    green = 2
-
-
-class CameraEasing(Enum):
-    cubicin = 'qi'
-    cubicout = 'qo'
-    line = 'l'
-    reset = 'reset'
-    sine = 's'
-
-
-class SceneType(Enum):
-    trackshow = 'trackshow'
-    trackhide = 'trackhide'
-    redline = 'redline'
-    arcahvdistort = 'arcahvdistort'
-    arcahvdebris = 'arcahvdebris'
+scenetypelist = [
+    'trackshow',
+    'trackhide',
+    'redline',
+    'arcahvdistort',
+    'arcahvdebris'
+]
 
 
 class Note:
     def __init__(self, time: int):
-        self.time: int = time
+        self.time = time
         self.type = type(self).__name__
         self._alterself = None  # Temp
 
@@ -63,12 +57,12 @@ class Note:
         return type(self).__name__
 
 
-class AudioOffset(Note):  # 虽然不太合理，但还是继承了Note对象））
+class AudioOffset(Note):  # 虽然不太合理，但还是继承了Note对象 TODO: 之后将AudioOffset作为NoteList的属性
     def __init__(self, offset: int):
         super(AudioOffset, self).__init__(0)
         self.offset = offset
 
-    def __repr__(self):
+    def __str__(self):
         return 'AudioOffset:{offset}'.format(offset=int(self.offset))
 
     def moveto(self, dest: int):
@@ -83,7 +77,7 @@ class Tap(Note):
         super(Tap, self).__init__(time)
         self.lane: int = lane
 
-    def __repr__(self):
+    def __str__(self):
         return '({time},{lane});'.format(time=int(self.time), lane=int(self.lane))
 
     def copyto(self, dest: int):
@@ -98,10 +92,28 @@ class Tap(Note):
 class Hold(Tap):
     def __init__(self, time: int, totime: int, lane: int):
         super(Hold, self).__init__(time, lane)
-        self.totime: int = totime
+        self.totime = totime
         self._alterself = deepcopy(self)
 
-    def __repr__(self):
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            start = item.start if item.start else self.time
+            stop = item.stop if item.stop else self.totime
+            step = item.step if item.step else (stop - start)
+            if stop < start:
+                raise AffNoteIndexError('start time is before stop time')
+            elif step < 0:
+                raise AffNoteIndexError('step smaller than zero')
+
+            notelist = []
+            while start < stop:
+                notelist.append(Hold(start, start + step, self.lane))
+                start += step
+            return notelist[0] if len(notelist) == 1 else notelist
+        else:
+            raise AffNoteIndexError('Hold indices must be slices')
+
+    def __str__(self):
         return 'hold({time},{totime},{lane});'.format(
             time=int(self.time), totime=int(self.totime), lane=int(self.lane))
 
@@ -122,28 +134,81 @@ class Hold(Tap):
 
 
 class Arc(Note):
-    def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing, fromy: float, toy: float, color,
-                 isskyline, skynote: list, fx):
+    def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: str, fromy: float, toy: float,
+                 color: int, isskyline: bool, skynote: list = None, fx=None):
         super(Arc, self).__init__(time)
-        self.totime: int = totime
+        self.totime = totime
         self.fromx: float = fromx
         self.fromy: float = fromy
         self.tox: float = tox
         self.toy: float = toy
-        self.slideeasing: SlideEasing = slideeasing
-        self.color: ArcColor = color
+        self.slideeasing: str = slideeasing
+        self.color: int = color
         self.isskyline: bool = isskyline
         self.skynote: list = skynote
-        self.fx: FX = fx
+        self.fx: str = fx
 
-    def __repr__(self):
+    def __getitem__(self, item):
+        x_type = 's'
+        y_type = 's'
+        se = self.slideeasing
+
+        if len(se) < 3 and se not in ['bb', 'bs', 'sb']:
+            x_type = se
+            if se == 'b':
+                y_type = 'b'
+        else:
+            if se.startswith('b'):
+                x_type = 'b'
+            elif se.startswith('si'):
+                x_type = 'si'
+            elif se.startswith('so'):
+                x_type = 'so'
+
+            if se.endswith('b'):
+                y_type = 'b'
+            elif se.endswith('si'):
+                y_type = 'si'
+            elif se.endswith('so'):
+                y_type = 'so'
+        if isinstance(item, slice):
+            start = item.start if item.start else self.time
+            stop = item.stop if item.stop else self.totime
+            step = item.step if item.step else (stop - start)
+            if stop < start:
+                raise AffNoteIndexError('start time is before stop time')
+            elif step < 0:
+                raise AffNoteIndexError('step smaller than zero')
+
+            notelist = []
+            while start < stop:
+                slice_x = slicer(start + step, self.time, self.totime, self.fromx, self.tox, x_type)
+                slice_y = slicer(start + step, self.time, self.totime, self.fromy, self.toy, y_type)
+                notelist.append(Arc(start, start + step, self.fromx, slice_x, 's', self.fromy, slice_y, self.color,
+                                    self.isskyline))
+                start += step
+            return notelist[0] if len(notelist) == 1 else notelist
+
+        else:
+            slice_x = slicer(item, self.time, self.totime, self.fromx, self.tox, x_type)
+            slice_y = slicer(item, self.time, self.totime, self.fromy, self.toy, y_type)
+            arc = deepcopy(self)
+            self.fromx = slice_x
+            self.fromy = slice_y
+            self.tox = slice_x
+            self.toy = slice_y
+            return arc
+
+    def __len__(self):
+        return self.totime - self.time
+
+    def __str__(self):
         arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
                  '{isskyline})'.format(
-                    time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
-                    slideeasing=self.slideeasing.value, tox=self.tox, toy=self.toy, color=self.color.value,
-                    fx=self.fx.name,
-                    isskyline='true' if self.isskyline else 'false'
-                 )
+                  time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
+                  slideeasing=self.slideeasing, tox=self.tox, toy=self.toy, color=int(self.color),
+                  fx=self.fx if self.fx else 'none', isskyline='true' if self.isskyline else 'false'
+                  )
         skynotestr = ''
         if self.skynote:
             for i in range(len(self.skynote)):
@@ -155,53 +220,11 @@ class Arc(Note):
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
-        easings = {name for name, member in SlideEasing.__members__.items()}
-        colors = {name for name, member in ArcColor.__members__.items()}.union(
-                 {member.value for name, member in ArcColor.__members__.items()})
-        fxs = {name for name, member in FX.__members__.items()}
-
-        if type(value).__name__ != 'SlideEasing' and key == 'slideeasing':
-            if value in easings:
-                for each in SlideEasing:
-                    if each.value == value:
-                        self.__dict__[key] = each
-            else:
-                print('Value', value, 'is invalid. Setting Slideeasing.b.')  # TODO 抛出异常
-                self.__dict__[key] = SlideEasing.b
-
-        if type(value).__name__ != 'ArcColor' and key == 'color':
-            if value in colors:
-                for each in ArcColor:
-                    if each.value == value:
-                        self.__dict__[key] = each
-                    elif each.name == value:
-                        self.__dict__[key] = each
-            else:
-                print('Value', value, 'is invalid. Setting ArcColor.blue.')  # TODO 抛出异常
-                self.__dict__[key] = ArcColor.blue
-
-        if type(value).__name__ != 'FX' and key == 'fx':
-            if value in fxs:
-                for each in FX:
-                    if each.value == value:
-                        self.__dict__[key] = each
-                    elif each.name == value:
-                        self.__dict__[key] = each
-            else:
-                print('Value', value, 'is invalid. Setting FX.none.')  # TODO 抛出异常
-                self.__dict__[key] = FX.none
-
         if key == 'skynote' and value:
             if value:
                 for each in enumerate(value):
                     value[each[0]] = int(each[1])
             self.__dict__[key] = sorted(value)
-
-        if key == 'isskyline':
-            if value == 'true':
-                self.__dict__[key] = True
-            elif value == 'false':
-                self.__dict__[key] = False
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -232,13 +255,32 @@ class Arc(Note):
 
 
 class Timing(Note):
-    def __init__(self, time: int, bpm: float, bar: float):
+    def __init__(self, time: int, bpm: float, bar: float = 4):
         super(Timing, self).__init__(time)
         self.bpm: float = bpm
         self.bar: float = bar
 
-    def __repr__(self):
+    def __str__(self):
         return 'timing({time},{bpm:.2f},{bar:.2f});'.format(time=int(self.time), bpm=self.bpm, bar=self.bar)
+
+    def copyto(self, dest: int):
+        self._alterself = deepcopy(self)
+        self._alterself.time = dest
+        return self._alterself
+
+
+class Flick(Note):
+    def __init__(self, time: int, x: float, y: float, dx: float, dy: float):
+        super().__init__(time)
+        self.x: float = x
+        self.y: float = y
+        self.dx: float = dx
+        self.dy: float = dy
+
+    def __str__(self):
+        return 'flick({time},{x:.2f},{y:.2f},{dx:.2f},{dy:.2f});'.format(
+            time=self.time, x=self.x, y=self.y, dx=self.dx, dy=self.dy
+        )
 
     def copyto(self, dest: int):
         self._alterself = deepcopy(self)
@@ -248,7 +290,7 @@ class Timing(Note):
 
 class Camera(Note):
     def __init__(self, time: int, transverse: float, bottomzoom: float, linezoom: float, steadyangle: float,
-                 topzoom: float, angle: float, easing, lastingtime: int):
+                 topzoom: float, angle: float, easing: str, lastingtime: int):
         super().__init__(time)
         self.transverse: float = transverse
         self.bottomzoom: float = bottomzoom
@@ -256,29 +298,14 @@ class Camera(Note):
         self.steadyangle: float = steadyangle
         self.topzoom: float = topzoom
         self.angle: float = angle
-        self.easing: CameraEasing = easing
-        self.lastingtime: int = lastingtime
+        self.easing: str = easing
+        self.lastingtime = lastingtime
 
-    def __setattr__(self, key, value):
-        super().__setattr__(key, value)
-        easings = {name for name, member in CameraEasing.__members__.items()}.union(
-            {member.value for name, member in CameraEasing.__members__.items()})
-        if type(value).__name__ != 'CameraEasing' and key == 'easing':
-            if value in easings:
-                for each in CameraEasing:
-                    if each.value == value:
-                        self.__dict__[key] = each
-                    elif each.name == value:
-                        self.__dict__[key] = each
-            else:
-                print('Value', value, 'is invalid. Setting CameraEasing.sine.')  # TODO 抛出异常
-                self.__dict__[key] = CameraEasing.sine
-
-    def __repr__(self):
+    def __str__(self):
         return 'camera({time},{trans:.2f},{bzoom:.2f},{lzoom:.2f},{stangle:.2f},{tzoom:.2f},{angle:.2f},{easing},' \
                '{lasting});'.format(
                 time=int(self.time), trans=self.transverse, bzoom=self.bottomzoom, lzoom=self.linezoom,
-                stangle=self.steadyangle, tzoom=self.topzoom, angle=self.angle, easing=self.easing.value,
+                stangle=self.steadyangle, tzoom=self.topzoom, angle=self.angle, easing=self.easing,
                 lasting=int(self.lastingtime))
 
     def copyto(self, dest: int):
@@ -288,32 +315,18 @@ class Camera(Note):
 
 
 class SceneControl(Note):
-    def __init__(self, time: int, scenetype, x: float = None, y: int = None):
+    def __init__(self, time: int, scenetype: str, x: float = None, y: int = None):
         super(SceneControl, self).__init__(time)
-        self.scenetype = scenetype
-        self.x = x
+        self.scenetype: str = scenetype
+        self.x: float = x
         self.y = y
 
-    def __setattr__(self, key, value):
-        super().__setattr__(key, value)
-        types = {name for name, member in SceneType.__members__.items()}
-        if type(value).__name__ != 'SceneType' and key == 'scenetype':
-            if value in types:
-                for each in SceneType:
-                    if each.value == value:
-                        self.__dict__[key] = each
-                    elif each.name == value:
-                        self.__dict__[key] = each
-            else:
-                print('Value', value, 'is invalid. Setting SceneType.trackshow.')  # TODO 抛出异常
-                self.__dict__[key] = SceneType.trackshow
-
-    def __repr__(self):
-        if self.scenetype.name in ['trackshow', 'trackhide']:
-            return 'scenecontrol({0},{1});'.format(self.time, self.scenetype.value)
-        elif self.scenetype.name in ['redline', 'arcahvdistort', 'arcahvdebris']:
+    def __str__(self):
+        if self.scenetype in ['trackshow', 'trackhide']:
+            return 'scenecontrol({0},{1});'.format(self.time, self.scenetype)
+        elif self.scenetype in ['redline', 'arcahvdistort', 'arcahvdebris']:
             return 'scenecontrol({0},{1},{2:.2f},{3});'.format(
-                int(self.time), self.scenetype.value, self.x, int(self.y))
+                int(self.time), self.scenetype, self.x, int(self.y))
         else:
             return None
 
@@ -321,18 +334,20 @@ class SceneControl(Note):
 class TimingGroup(list):
     def __init__(self, tup):
         super().__init__(tup)
-        self.type = type(self).__name__
 
     def __getattr__(self, item):
-        # 把timinggroup中第二个元素的time属性，当作整个timinggroup的属性
-        # 如果timinggroup只有一个元素或者为空就返回0
-        if item == 'time':
-            if len(self) > 1:
-                return self[1].time
-            else:
-                return 0
+        # 把timinggroup中time最小且非零元素的time属性，当作整个timinggroup的属性
+        # 如果timinggroup为空就返回0
+        mintime = 0
+        for each in self:
+            if each and each.time != 0:
+                if mintime == 0:
+                    mintime = each.time
+                elif mintime > each.time:
+                    mintime = each.time
+        return mintime
 
-    def __repr__(self):
+    def __str__(self):
         group = 'timinggroup(){'
         for each in self:
             group += '\n{0}'.format(each)
