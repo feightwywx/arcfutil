@@ -133,7 +133,7 @@ class Hold(Tap):
         self.totime += value
 
 
-class Arc(Note):
+class Arc(Note):  # FIXME 如果对Arc对象遍历，会进入死循环
     def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: str, fromy: float, toy: float,
                  color: int, isskyline: bool, skynote: list = None, fx=None):
         super(Arc, self).__init__(time)
@@ -184,12 +184,22 @@ class Arc(Note):
             while start < stop:
                 slice_x = slicer(start + step, self.time, self.totime, self.fromx, self.tox, x_type)
                 slice_y = slicer(start + step, self.time, self.totime, self.fromy, self.toy, y_type)
-                notelist.append(Arc(start, start + step, self.fromx, slice_x, 's', self.fromy, slice_y, self.color,
-                                    self.isskyline))
+                slicearc = Arc(start, start + step, self.fromx, slice_x, 's', self.fromy, slice_y, self.color,
+                               self.isskyline)
+
+                if item.step and (start == item.start or item.start):
+                    slicetime = slicearc.time = start - step
+                    slice_fromx = slicer(slicetime, self.time, self.totime, self.fromx, self.tox, x_type)
+                    slice_fromy = slicer(slicetime, self.time, self.totime, self.fromy, self.toy, y_type)
+                    slicearc.time = slicetime
+                    slicearc.fromx = slice_fromx
+                    slicearc.fromy = slice_fromy
+                notelist.append(slicearc)
                 start += step
             return notelist[0] if len(notelist) == 1 else notelist
 
         else:
+            print('hit')
             slice_x = slicer(item, self.time, self.totime, self.fromx, self.tox, x_type)
             slice_y = slicer(item, self.time, self.totime, self.fromy, self.toy, y_type)
             arc = deepcopy(self)
