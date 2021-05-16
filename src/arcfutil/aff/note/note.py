@@ -210,7 +210,7 @@ class Arc(Note):  # FIXME 如果对Arc对象遍历，会进入死循环
             return arc
 
     def __len__(self):
-        return self.totime - self.time
+        return self.totime - self.time  # FIXME 需要用 if ... is not None: 替换整个项目的 if ...:
 
     def __str__(self):
         arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \

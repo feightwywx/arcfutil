@@ -33,7 +33,7 @@ def dump(notelist: list):
     affstr = ''
     isfirsthyphen = False
     for eachline in notelist:
-        if eachline:
+        if eachline is not None:
             affstr += (str(eachline) + '\n')
         if type(eachline).__name__ == 'AudioOffset' and not isfirsthyphen:
             affstr += '-\n'
@@ -46,7 +46,7 @@ def dumps(notelist: list, destpath: str):
     isfirsthyphen = False
     with open(destpath, 'w') as faff:
         for eachline in notelist:
-            if eachline:
+            if eachline is not None:
                 faff.write(str(eachline) + '\n')
             if type(eachline).__name__ == 'AudioOffset' and not isfirsthyphen:
                 faff.write('-\n')
@@ -112,7 +112,6 @@ def __loadline(notestr: str):
             noteobj.fx = None
     elif re.match(patt_flick, notestr):
         notepara = re.findall(patt_flick, notestr)[0]
-        print(notepara)
         noteobj = note.Flick(time=int(notepara[0]), x=float(notepara[1]), y=float(notepara[1]), dx=float(notepara[2]),
                              dy=float(notepara[3]))
         return noteobj

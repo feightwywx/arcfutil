@@ -20,7 +20,7 @@ def sort(unsorted: list):
     sortedlist = []
 
     for eachnote in unsorted:
-        if eachnote:
+        if eachnote is not None:
             if eachnote.type == 'AudioOffset' and eachnote:  # 如果有超过一个AudioOffset，丢弃后面的
                 offset = eachnote
             elif eachnote.type == 'Timing':
