@@ -97,7 +97,7 @@ def __loadline(notestr: str):
                            isskyline=notepara[9], skynote=arctap)
 
         # 如果不为None就设置属性
-        if arctap:
+        if arctap is not None:
             noteobj.skynote = arctap
         # isskyline标准化
         if noteobj.isskyline == 'true':
@@ -128,9 +128,9 @@ def __loadline(notestr: str):
         notepara = re.findall(patt_scene, notestr)[0]
         noteobj = note.SceneControl(int(notepara[0]), str(notepara[1]))
         try:
-            if notepara[3]:
+            if notepara[3] is not None:
                 noteobj.x = float(notepara[3])
-            if notepara[4]:
+            if notepara[4] is not None:
                 noteobj.y = int(notepara[4])
         except IndexError:
             pass

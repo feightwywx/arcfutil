@@ -220,7 +220,7 @@ class Arc(Note):  # FIXME 如果对Arc对象遍历，会进入死循环
                   fx=self.fx if self.fx else 'none', isskyline='true' if self.isskyline else 'false'
                   )
         skynotestr = ''
-        if self.skynote:
+        if self.skynote is not None:
             for i in range(len(self.skynote)):
                 eachtime = self.skynote[i]
                 skynotestr += 'arctap({time})'.format(time=int(eachtime))
@@ -230,10 +230,9 @@ class Arc(Note):  # FIXME 如果对Arc对象遍历，会进入死循环
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
-        if key == 'skynote' and value:
-            if value:
-                for each in enumerate(value):
-                    value[each[0]] = int(each[1])
+        if key == 'skynote' and value is not None:
+            for each in enumerate(value):
+                value[each[0]] = int(each[1])
             self.__dict__[key] = sorted(value)
 
     def copyto(self, dest: int):
@@ -247,7 +246,7 @@ class Arc(Note):  # FIXME 如果对Arc对象遍历，会进入死循环
         self.time = dest
         lasting = self.time - originaltime
         self.totime += lasting
-        if self.skynote:
+        if self.skynote is not None:
             for each in enumerate(self.skynote):
                 self.skynote[each[0]] += lasting
 
@@ -259,7 +258,7 @@ class Arc(Note):  # FIXME 如果对Arc对象遍历，会进入死循环
     def offsetto(self, value: int):
         super(Arc, self).offsetto(value)
         self.totime += value
-        if self.skynote:
+        if self.skynote is not None:
             for each in enumerate(self.skynote):
                 self.skynote[each[0]] += value
 
@@ -350,7 +349,7 @@ class TimingGroup(list):
         # 如果timinggroup为空就返回0
         mintime = 0
         for each in self:
-            if each and each.time != 0:
+            if each is not None and each.time != 0:
                 if mintime == 0:
                     mintime = each.time
                 elif mintime > each.time:
@@ -366,7 +365,7 @@ class TimingGroup(list):
 
     def moveto(self, dest: int):
         for each in self:
-            if each:
+            if each is not None:
                 each.moveto(dest)
 
     def offsetto(self, value: int):
@@ -376,7 +375,7 @@ class TimingGroup(list):
                 basebpm = each.bpm
 
         for each in self:
-            if each:
+            if each is not None:
                 each.offsetto(value)
         self.append(Timing(0, basebpm, 4))
 

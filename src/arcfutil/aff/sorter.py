@@ -46,7 +46,7 @@ def sort(unsorted: list):
     sortedlist.extend(sorted(sortable_arc, key=attrgetter('time', 'fromx', 'fromy', 'totime', 'tox', 'toy')))
     sortedlist.extend(sorted(sortable_group, key=attrgetter('time')))
     sortedlist.sort(key=attrgetter('time'))
-    if offset:
+    if offset is not None:
         sortedlist.insert(0, None)
         sortedlist.insert(0, offset)
     return sortedlist
