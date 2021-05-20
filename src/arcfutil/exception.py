@@ -12,5 +12,9 @@ class AffNoteValueError(Exception):
     pass
 
 
+class AffSceneTypeError(Exception):
+    pass
+
+
 class AffReadError(Exception):
     pass

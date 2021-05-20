@@ -54,5 +54,5 @@ def loads(path: str) -> list:
 
 
 # sorter
-def sort(unsorted: list):
+def sort(unsorted: NoteGroup):
     return sorter.sort(unsorted)

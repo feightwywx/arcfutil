@@ -4,17 +4,9 @@
 # Author: .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
-from functools import wraps
 from math import sin
 from math import cos
 from math import pi
-
-
-# def __checker(func):
-#     @wraps(func)
-#     def decorated(*args, **kwargs):
-#         return func(*args, **kwargs)
-#     return decorated
 
 
 def linar(percent):

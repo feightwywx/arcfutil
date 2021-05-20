@@ -4,13 +4,14 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
-from .note import Note
-from .note import AudioOffset
-from .note import Tap
-from .note import Hold
-from .note import Arc
-from .note import Timing
-from .note import Camera
-from .note import SceneControl
-from .note import TimingGroup
-from .note import Flick
+from .common_note import Note
+from .common_note import NoteGroup
+from .tap import Tap
+from .hold import Hold
+from .arc import Arc
+from .timing import Timing
+from .camera import Camera
+from .scenecontrol import SceneControl
+from .flick import Flick
+from .notegroup import AffList
+from .notegroup import TimingGroup

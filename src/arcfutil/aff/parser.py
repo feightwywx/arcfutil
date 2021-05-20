@@ -28,7 +28,7 @@ def __dumpline(noteobj: note.Note):
     return str(noteobj)
 
 
-def dump(notelist: list):
+def dump(notelist: note.NoteGroup):
     notelist = sorter.sort(notelist)
     affstr = ''
     isfirsthyphen = False
@@ -41,7 +41,7 @@ def dump(notelist: list):
     return affstr
 
 
-def dumps(notelist: list, destpath: str):
+def dumps(notelist: note.NoteGroup, destpath: str):
     notelist = sorter.sort(notelist)
     isfirsthyphen = False
     with open(destpath, 'w') as faff:

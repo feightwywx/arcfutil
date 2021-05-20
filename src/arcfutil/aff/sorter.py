@@ -3,12 +3,12 @@
 
 # Author: .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
-
+from copy import copy
 from operator import attrgetter
-from . import note
+from .note import *
 
 
-def sort(unsorted: list):
+def sort(unsorted: NoteGroup):
     sortable_timing = []
     sortable_tap = []
     sortable_hold = []
@@ -16,14 +16,12 @@ def sort(unsorted: list):
     sortable_camera = []
     sortable_scene = []
     sortable_group = []
-    offset = None
-    sortedlist = []
+    sortedlist = copy(unsorted)
+    sortedlist.clear()
 
     for eachnote in unsorted:
         if eachnote is not None:
-            if eachnote.type == 'AudioOffset' and eachnote:  # 如果有超过一个AudioOffset，丢弃后面的
-                offset = eachnote
-            elif eachnote.type == 'Timing':
+            if eachnote.type == 'Timing':
                 sortable_timing.append(eachnote)
             elif eachnote.type == 'Tap':
                 sortable_tap.append(eachnote)
@@ -37,16 +35,13 @@ def sort(unsorted: list):
             elif eachnote.type == 'SceneControl':
                 sortable_scene.append(eachnote)
             elif eachnote.type == 'TimingGroup':
-                sortable_group.append(note.TimingGroup(sort(eachnote)))
+                sortable_group.append(sort(eachnote))
     sortedlist.extend(sorted(sortable_camera, key=attrgetter('time')))
     sortedlist.extend(sorted(sortable_timing, key=attrgetter('time')))
     sortedlist.extend(sorted(sortable_scene, key=attrgetter('time')))
     sortedlist.extend(sorted(sortable_tap, key=attrgetter('time', 'lane')))
     sortedlist.extend(sorted(sortable_hold, key=attrgetter('time', 'lane', 'totime')))
     sortedlist.extend(sorted(sortable_arc, key=attrgetter('time', 'fromx', 'fromy', 'totime', 'tox', 'toy')))
-    sortedlist.extend(sorted(sortable_group, key=attrgetter('time')))
     sortedlist.sort(key=attrgetter('time'))
-    if offset is not None:
-        sortedlist.insert(0, None)
-        sortedlist.insert(0, offset)
+    sortedlist.extend(sortable_group)
     return sortedlist
