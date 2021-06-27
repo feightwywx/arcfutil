@@ -10,7 +10,7 @@ from . import sorter
 
 
 # parser
-def dump(notelist: list) -> str:
+def dump(notelist: NoteGroup) -> str:
     """
     Encode note objects to Arcaea format string.
     ProTip: If you want to encode a single note object, just refer itself.
@@ -21,7 +21,7 @@ def dump(notelist: list) -> str:
     return parser.dump(notelist)
 
 
-def dumps(notelist: list, destpath: str):
+def dumps(notelist: NoteGroup, destpath: str):
     """
     Encode note objects to Arcaea fromat string, and write it to a file (usually a .aff file).
     NOTICE! If destpath point at a file which exists previously, EVERYTHING in it will be LOST!

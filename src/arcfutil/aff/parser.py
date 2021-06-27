@@ -4,24 +4,9 @@
 # Author: .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
-import re
 from ..exception import *
 from . import note
 from . import sorter
-
-
-# 正则表达式
-patt_offset = r'AudioOffset:(-*\d+)'
-patt_tap = r'\((\d+),([1-4])\);'
-patt_hold = r'hold\((\d+),(\d+),([1-4])\);'
-patt_arc = r'arc\((\d+),(\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([a-z]{1,4}),(-*\d+[.\d+]*),(-*\d+[.\d+]*),([0-2]),' \
-             r'([a-z]+),([a-z]+)\).*;'
-patt_arctap = r'arctap\(([0-9]+)\)'
-patt_flick = r'flick\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*)\);'
-patt_timing = r'timing\((\d+),(-*\d+[.\d+]*),(\d+[.\d+]*)\);'
-patt_camera = r'camera\((\d+),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),(-*\d+[.\d+]*),' \
-              r'(-*\d+[.\d+]*),([a-z]+),(\d+)\);'
-patt_scene = r'scenecontrol\((\d+),([a-z]+)(,(\d+[.\d+]*),(\d+))?\);'
 
 
 def __dumpline(noteobj: note.Note):
@@ -30,64 +15,17 @@ def __dumpline(noteobj: note.Note):
 
 def dump(notelist: note.NoteGroup):
     notelist = sorter.sort(notelist)
-    affstr = ''
-    isfirsthyphen = False
-    for eachline in notelist:
-        if eachline is not None:
-            affstr += (str(eachline) + '\n')
-        if type(eachline).__name__ == 'AudioOffset' and not isfirsthyphen:
-            affstr += '-\n'
-            isfirsthyphen = True
-    return affstr
+    return str(notelist)
 
 
 def dumps(notelist: note.NoteGroup, destpath: str):
-    notelist = sorter.sort(notelist)
-    isfirsthyphen = False
+    strnotelist = dump(notelist)
     with open(destpath, 'w') as faff:
-        for eachline in notelist:
-            if eachline is not None:
-                faff.write(str(eachline) + '\n')
-            if type(eachline).__name__ == 'AudioOffset' and not isfirsthyphen:
-                faff.write('-\n')
-                isfirsthyphen = True
-    return True
-
-
-def __serialgroup(notelist):
-    tmpgroup = []
-    currlen = len(notelist)
-    for i in range(currlen - 1):
-        if i < len(notelist) and notelist[i] == '_groupbegin_':
-            notelist.pop(i)  # 扔掉初始标记
-            # 哦我的上帝，这循环比隔壁苏珊阿姨的苹果派还要烂，让我直想穿皮靴狠狠踹你的屁股
-            while True:
-                try:
-                    if notelist[i] == '_groupend_':
-                        notelist.pop(i)  # 扔掉结束标记，
-                        break  # 然后跳出死循环
-                except IndexError:  # 没有找到timinggroup结束标记
-                    pass
-                tmpgroup.append(notelist[i])
-                notelist.pop(i)
-            notelist.insert(i, note.TimingGroup(tmpgroup))
-            tmpgroup = []
-
-    return notelist
+        return faff.write(strnotelist)
 
 
 def __notestriter(notestr: str, termsign: str):
-    noteslicestr = ''
-    for each in notestr:
-        if each != termsign[0]:
-            noteslicestr += each
-            if len(notestr) > 0:
-                notestr = notestr[1:]
-            else:
-                break
-        else:
-            break
-    return noteslicestr
+    return notestr[:notestr.find(termsign)]
 
 
 def __loadline(notestr: str):
@@ -122,8 +60,9 @@ def __loadline(notestr: str):
             isskyline = False
             if paralist[9] != 'false':
                 raise AffNoteValueError
-        if sub_expression is not None:
-            skynotetimelist = __loadline(sub_expression.lstrip('[').rstrip(']'))
+        if sub_expression is not None:  # arctap读取
+            splited = sub_expression.split(',')
+            skynotetimelist = [arctap[arctap.index('(') + 1:arctap.rindex(')')] for arctap in splited]
         else:
             skynotetimelist = []
         return note.Arc(
@@ -139,8 +78,6 @@ def __loadline(notestr: str):
             isskyline=isskyline,
             skynote=skynotetimelist
         )
-    elif keyword == 'arctap':
-        return paralist
     elif keyword == 'timing':
         return note.Timing(
             int(paralist[0]),
@@ -199,22 +136,26 @@ def load(affstr: str):
         if stripedlinestr not in ['', '-']:
             if stripedlinestr.startswith('AudioOffset:'):
                 notelist.offset = int(stripedlinestr[stripedlinestr.index(':') + 1:])
-            if stripedlinestr == '};':
+                continue
+            elif stripedlinestr.startswith('TimingPointDensityFactor'):
+                notelist.desnity = int(stripedlinestr[stripedlinestr.index(':') + 1:])
+                continue
+            elif stripedlinestr == '};':
                 notelist.append(tempstruct)
                 tempstruct = None
                 continue
-
-            loadednote = __loadline(stripedlinestr)
-            if isinstance(loadednote, note.TimingGroup):
-                if tempstruct is None:
-                    tempstruct = loadednote
-                else:
-                    raise AffReadError('Timinggroup nesting is not allowed')
             else:
-                if tempstruct is not None:
-                    tempstruct.append(loadednote)
+                loadednote = __loadline(stripedlinestr)
+                if isinstance(loadednote, note.TimingGroup):
+                    if tempstruct is None:
+                        tempstruct = loadednote
+                    else:
+                        raise AffReadError('Timinggroup nesting is not allowed')
                 else:
-                    notelist.append(loadednote)
+                    if tempstruct is not None:
+                        tempstruct.append(loadednote)
+                    else:
+                        notelist.append(loadednote)
         else:
             continue
     return notelist
