@@ -40,7 +40,6 @@ def __loadline(notestr: str):
     tempnotestr = tempnotestr[len(parastr) + 1:]
     sub_expression = __notestriter(tempnotestr, ';')
     tempnotestr = tempnotestr[len(sub_expression) + 1:]
-    print(keyword, paralist, sub_expression, tempnotestr)
 
     if keyword == '' and paralist is not None:
         return note.Tap(
