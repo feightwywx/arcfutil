@@ -42,7 +42,7 @@ class NoteGroup(list):
         self.type = type(self).__name__
 
     def __str__(self):
-        return ''.join(str(x) + '\n' for x in self)
+        return ''.join(str(x) + '\n' for x in self if x is not None)
 
     def moveto(self, dest: int):
         for each in self:

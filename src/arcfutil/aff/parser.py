@@ -76,87 +76,151 @@ def __serialgroup(notelist):
     return notelist
 
 
-def __loadline(notestr: str):
-    noteobj = None
-    if re.match(patt_offset, notestr):
-        offset = re.findall(patt_offset, notestr)[0]
-        noteobj = note.AudioOffset(int(offset))
-    elif re.match(patt_tap, notestr):
-        notepara = re.findall(patt_tap, notestr)[0]
-        noteobj = note.Tap(time=int(notepara[0]), lane=int(notepara[1]))
-    elif re.match(patt_hold, notestr):
-        notepara = re.findall(patt_hold, notestr)[0]
-        noteobj = note.Hold(time=int(notepara[0]), totime=int(notepara[1]), lane=int(notepara[2]))
-    elif re.match(patt_arc, notestr):
-        notepara = re.findall(patt_arc, notestr)[0]
-        arctap = re.findall(patt_arctap, notestr)
-
-        noteobj = note.Arc(time=int(notepara[0]), totime=int(notepara[1]), fromx=float(notepara[2]),
-                           tox=float(notepara[3]), fromy=float(notepara[5]), toy=float(notepara[6]),
-                           slideeasing=notepara[4], color=int(notepara[7]), fx=notepara[8],
-                           isskyline=notepara[9], skynote=arctap)
-
-        # 如果不为None就设置属性
-        if arctap is not None:
-            noteobj.skynote = arctap
-        # isskyline标准化
-        if noteobj.isskyline == 'true':
-            noteobj.isskyline = True
-        elif noteobj.isskyline == 'false':
-            noteobj.isskyline = False
+def __notestriter(notestr: str, termsign: str):
+    noteslicestr = ''
+    for each in notestr:
+        if each != termsign[0]:
+            noteslicestr += each
+            if len(notestr) > 0:
+                notestr = notestr[1:]
+            else:
+                break
         else:
-            raise AffReadError(''.join([notestr,
-                                        ': Only \'true\' or \'false\' is accepted for property \'isskyline\'']))
-        # fx的none标准化
-        if noteobj.fx == 'none':
-            noteobj.fx = None
-    elif re.match(patt_flick, notestr):
-        notepara = re.findall(patt_flick, notestr)[0]
-        noteobj = note.Flick(time=int(notepara[0]), x=float(notepara[1]), y=float(notepara[1]), dx=float(notepara[2]),
-                             dy=float(notepara[3]))
-        return noteobj
-    elif re.match(patt_timing, notestr):
-        notepara = re.findall(patt_timing, notestr)[0]
-        noteobj = note.Timing(time=int(notepara[0]), bpm=float(notepara[1]), bar=float(notepara[2]))
-        return noteobj
-    elif re.match(patt_camera, notestr):
-        notepara = re.findall(patt_camera, notestr)[0]
-        noteobj = note.Camera(int(notepara[0]), float(notepara[1]), float(notepara[2]), float(notepara[3]),
-                              float(notepara[4]), float(notepara[5]), float(notepara[6]), str(notepara[7]),
-                              int(notepara[8]))
-    elif re.match(patt_scene, notestr):
-        notepara = re.findall(patt_scene, notestr)[0]
-        noteobj = note.SceneControl(int(notepara[0]), str(notepara[1]))
-        try:
-            if notepara[3] is not None:
-                noteobj.x = float(notepara[3])
-            if notepara[4] is not None:
-                noteobj.y = int(notepara[4])
-        except IndexError:
-            pass
-        return noteobj
-    elif notestr == 'timinggroup(){':  # flag
-        return '_groupbegin_'
-    elif notestr == '};':
-        return '_groupend_'
-    else:
-        if not notestr.strip():
-            raise AffReadError(''.join(['Invalid syntax:', notestr]))
+            break
+    return noteslicestr
+
+
+def __loadline(notestr: str):
+    tempnotestr = notestr.strip()
+    noteobj = None
+    # 依次切割出note类型，参数，      子表达式（如果有）
+    #         keyword  paralist   sub_expression
+    keyword = __notestriter(tempnotestr, '(')
+    tempnotestr = tempnotestr[len(keyword) + 1:]
+    parastr = __notestriter(tempnotestr, ')')
+    paralist = parastr.split(',')
+    tempnotestr = tempnotestr[len(parastr) + 1:]
+    sub_expression = __notestriter(tempnotestr, ';')
+    tempnotestr = tempnotestr[len(sub_expression) + 1:]
+    print(keyword, paralist, sub_expression, tempnotestr)
+
+    if keyword == '' and paralist is not None:
+        return note.Tap(
+            time=int(paralist[0]),
+            lane=int(paralist[1])
+        )
+    elif keyword == 'hold':
+        return note.Hold(
+            time=int(paralist[0]),
+            totime=int(paralist[1]),
+            lane=int(paralist[2])
+        )
+    elif keyword == 'arc':
+        if paralist[9] == 'true':  # 是否为黑线
+            isskyline = True
+        else:
+            isskyline = False
+            if paralist[9] != 'false':
+                raise AffNoteValueError
+        if sub_expression is not None:
+            skynotetimelist = __loadline(sub_expression.lstrip('[').rstrip(']'))
+        else:
+            skynotetimelist = []
+        return note.Arc(
+            time=int(paralist[0]),
+            totime=int(paralist[1]),
+            fromx=float(paralist[2]),
+            tox=float(paralist[3]),
+            slideeasing=paralist[4],
+            fromy=float(paralist[5]),
+            toy=float(paralist[6]),
+            color=int(paralist[7]),
+            fx=paralist[8],
+            isskyline=isskyline,
+            skynote=skynotetimelist
+        )
+    elif keyword == 'arctap':
+        return paralist
+    elif keyword == 'timing':
+        return note.Timing(
+            int(paralist[0]),
+            float(paralist[1]),
+            float(paralist[2])
+        )
+    elif keyword == 'camera':
+        return note.Camera(
+            time=int(paralist[0]),
+            transverse=float(paralist[1]),
+            bottomzoom=float(paralist[2]),
+            linezoom=float(paralist[3]),
+            steadyangle=float(paralist[4]),
+            topzoom=float(paralist[5]),
+            angle=float(paralist[6]),
+            easing=paralist[7],
+            lastingtime=int(paralist[8])
+        )
+    elif keyword == 'scenecontrol':
+        scenetype = paralist[1]
+        if scenetype in ['trackshow', 'trackhide']:
+            return note.SceneControl(
+                time=int(paralist[0]),
+                scenetype=scenetype
+            )
+        elif scenetype in ['redline', 'arcahvdistort', 'arcahvdebris', 'hidegroup']:
+            return note.SceneControl(
+                time=int(paralist[0]),
+                scenetype=scenetype,
+                x=float(paralist[2]),
+                y=int(paralist[3])
+            )
+        else:
+            raise AffSceneTypeError
+    elif keyword == 'flick':
+        return note.Flick(
+            time=int(paralist[0]),
+            x=float(paralist[1]),
+            y=float(paralist[2]),
+            dx=float(paralist[3]),
+            dy=float(paralist[4])
+        )
+    elif keyword == 'timinggroup':
+        temptg = note.TimingGroup(opt=','.join(paralist))
+        return temptg
 
     return noteobj
 
 
 def load(affstr: str):
     notestrlist = affstr.splitlines()
-    notelist = []
+    notelist = note.AffList()
+    tempstruct = None
     for eachline in notestrlist:
-        notelist.append(__loadline(eachline))
-    return __serialgroup(notelist)
+        stripedlinestr = eachline.strip()
+        if stripedlinestr not in ['', '-']:
+            if stripedlinestr.startswith('AudioOffset:'):
+                notelist.offset = int(stripedlinestr[stripedlinestr.index(':') + 1:])
+            if stripedlinestr == '};':
+                notelist.append(tempstruct)
+                tempstruct = None
+                continue
+
+            loadednote = __loadline(stripedlinestr)
+            if isinstance(loadednote, note.TimingGroup):
+                if tempstruct is None:
+                    tempstruct = loadednote
+                else:
+                    raise AffReadError('Timinggroup nesting is not allowed')
+            else:
+                if tempstruct is not None:
+                    tempstruct.append(loadednote)
+                else:
+                    notelist.append(loadednote)
+        else:
+            continue
+    return notelist
 
 
 def loads(path: str):
-    notelist = []
     with open(path, mode='r') as faff:
-        for eachline in faff:
-            notelist.append(__loadline(eachline.strip()))
-    return __serialgroup(notelist)
+        filestring = faff.read()
+    return load(filestring)
