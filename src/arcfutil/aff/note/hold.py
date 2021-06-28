@@ -28,6 +28,9 @@ class Hold(Tap):
         return 'hold({time},{totime},{lane});'.format(
             time=int(self.time), totime=int(self.totime), lane=int(self.lane))
 
+    def __iter__(self):  # 防止意外迭代之后进入死循环
+        pass
+
     def _getslicetimepara(self, item: slice) -> tuple:
         isreturnlist = bool(item.step is not None)
         start = item.start if item.start is not None else self.time

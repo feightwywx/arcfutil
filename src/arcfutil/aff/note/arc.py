@@ -9,7 +9,7 @@ from .hold import Hold
 from ...exception import *
 
 
-class Arc(Hold):  # FIXME 如果对Arc对象遍历，会进入死循环
+class Arc(Hold):
     def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: str, fromy: float, toy: float,
                  color: int, isskyline: bool, skynote: list = None, fx=None):
         super(Arc, self).__init__(time, totime, -1)
