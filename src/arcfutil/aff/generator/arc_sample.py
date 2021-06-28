@@ -26,7 +26,7 @@ def arc_crease_line(
     :return:
     """
     each_len = (base.totime - base.time) / count
-    arclist = base[::each_len]
+    arclist = NoteGroup(base[::each_len])
     currentx = base.fromx
     currenty = base.fromy
     if mode == 'm':
