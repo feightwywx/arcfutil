@@ -129,3 +129,10 @@ class Arc(Hold):  # FIXME 如果对Arc对象遍历，会进入死循环
             for each in enumerate(self.skynote):
                 self.skynote[each[0]] += value
         return self
+
+    def transfer(self, x_value: float, y_value: float):
+        self.fromx += x_value
+        self.tox += x_value
+        self.fromy += y_value
+        self.toy += y_value
+        return self
