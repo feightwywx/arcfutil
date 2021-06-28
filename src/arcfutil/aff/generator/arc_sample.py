@@ -38,6 +38,7 @@ def arc_crease_line(
             x_range = -x_range
             y_range = -y_range
             currentx = each.tox
+            currenty = each.toy
     elif mode == 'b':
         for i in range(1, len(arclist), 2):
             arclist[i].fromx += x_range
@@ -51,10 +52,10 @@ def arc_crease_line(
 
 def arc_rain(original_t: int, dest_t: int, step: int):
     def max_x(y: int) -> int:
-        return -50 * y + 150
+        return int(-0.5 * y + 200)
 
     def min_x(y: int) -> int:
-        return 50 * y - 50
+        return int(0.5 * y)
 
     destgroup = NoteGroup()
 
@@ -64,8 +65,8 @@ def arc_rain(original_t: int, dest_t: int, step: int):
         destgroup.append(Arc(
             current_time,
             current_time + step,
-            rand_x / 100,
-            rand_x / 100,
+            (rand_x - 50) / 100,
+            (rand_x - 50) / 100,
             's',
             rand_y / 100,
             rand_y / 100,
