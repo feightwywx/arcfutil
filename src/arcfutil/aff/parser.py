@@ -59,7 +59,7 @@ def __loadline(notestr: str):
             isskyline = False
             if paralist[9] != 'false':
                 raise AffNoteValueError
-        if sub_expression is not None:  # arctap读取
+        if sub_expression:  # arctap读取
             splited = sub_expression.split(',')
             skynotetimelist = [arctap[arctap.index('(') + 1:arctap.rindex(')')] for arctap in splited]
         else:
