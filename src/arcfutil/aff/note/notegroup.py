@@ -4,6 +4,7 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
+from .common_note import Note
 from .common_note import NoteGroup
 from .timing import Timing
 from ..sorter import sort
@@ -45,6 +46,15 @@ class TimingGroup(NoteGroup):
             group += '\n{0}'.format(each)
         group += '\n};'
         return group
+
+    def append(self, __object) -> None:
+        if isinstance(__object, Note):  # 禁止TimingGroup内嵌套其它NoteGroup
+            super(NoteGroup, self).append(__object)
+        else:
+            raise TypeError('can only append Note (or its instance, not "{}") to {}'.format(
+                type(__object).__name__,
+                type(self).__name__
+            ))
 
     def offsetto(self, value: int):
         basebpm = 0
