@@ -6,13 +6,14 @@
 
 from .easing import slicer
 from .hold import Hold
+from . import validstrings
 from ...exception import *
 
 
 class Arc(Hold):
     def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: str, fromy: float, toy: float,
                  color: int, isskyline: bool, skynote: list = None, fx=None):
-        super(Arc, self).__init__(time, totime, -1)
+        super(Arc, self).__init__(time, totime, 1)
         self.fromx: float = fromx
         self.fromy: float = fromy
         self.tox: float = tox
@@ -65,6 +66,19 @@ class Arc(Hold):
             for each in enumerate(value):
                 value[each[0]] = int(each[1])
             self.__dict__[key] = sorted(value)
+        elif key == 'color':
+            if not 0 <= value <= 2:
+                raise AffNoteValueError('invalid value {} for attribute "color" (only accept 0~2)'.format(value))
+        elif key == 'slideeasing':
+            if value not in validstrings.slideeasinglist:
+                raise AffNoteValueError('invalid value {} for attribute "slideeasing" (only accept {})'.format(
+                    value, str(validstrings.slideeasinglist)
+                ))
+        elif key == 'fx' and value is not None:
+            if value not in validstrings.fxlist:
+                raise AffNoteValueError('invalid value {} for attribute "fx" (only accept {})'.format(
+                    value, str(validstrings.fxlist)
+                ))
 
     def __geteasingtype(self):
         x_type = 's'

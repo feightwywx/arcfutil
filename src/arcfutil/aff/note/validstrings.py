@@ -12,7 +12,7 @@ slideeasinglist = [
     'sisi',
     'soso',
     'sosi',
-    'soso'
+    'siso'
 ]
 
 fxlist = [
@@ -33,5 +33,6 @@ scenetypelist = [
     'trackhide',
     'redline',
     'arcahvdistort',
-    'arcahvdebris'
+    'arcahvdebris',
+    'hidegroup'
 ]

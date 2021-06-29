@@ -5,6 +5,8 @@
 # Licensed under the MIT License.
 
 from .common_note import Note
+from . import validstrings
+from ...exception import *
 
 
 class Camera(Note):
@@ -26,3 +28,11 @@ class Camera(Note):
                 time=int(self.time), trans=self.transverse, bzoom=self.bottomzoom, lzoom=self.linezoom,
                 stangle=self.steadyangle, tzoom=self.topzoom, angle=self.angle, easing=self.easing,
                 lasting=int(self.lastingtime))
+
+    def __setattr__(self, key, value):
+        super(Camera, self).__setattr__(key, value)
+        if key == 'easing':
+            if value not in validstrings.cameraeasinglist:
+                raise AffNoteValueError('invalid value {} for attribute "easing" (only accept {})'.format(
+                    value, str(validstrings.cameraeasinglist)
+                ))

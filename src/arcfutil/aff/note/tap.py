@@ -5,6 +5,7 @@
 # Licensed under the MIT License.
 
 from .common_note import Note
+from ...exception import *
 
 
 class Tap(Note):
@@ -14,6 +15,12 @@ class Tap(Note):
 
     def __str__(self):
         return '({time},{lane});'.format(time=int(self.time), lane=int(self.lane))
+
+    def __setattr__(self, key, value):
+        super(Tap, self).__setattr__(key, value)
+        if key == 'lane':
+            if not 0 < value < 5:
+                raise AffNoteValueError('invalid value {} for attribute "lane" (only accept 1~4)'.format(value))
 
     def mirror(self):
         self.lane = 5 - self.lane  # Simple magic number
