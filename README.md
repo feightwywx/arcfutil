@@ -18,7 +18,7 @@ pip install -U arcfutil
 
   - [x] 支持切片等特性。Python式地创作谱面吧！
 
-  - [x] 支持Arcaea谱面的各种元素！（`tap`，`hold`，`arc`（含`arctap`），`timing`，`camera`和`scenecontrol`以及`flick`！）
+  - [x] 支持Arcaea谱面的各种元素！（截至2021年愚人节版本v3.5.3）
   
   - [x] `timinggroup`支持
   
@@ -39,3 +39,4 @@ pip install -U arcfutil
 ## 用法
   
 请参阅[文档](https://github.com/feightwywx/arcfutil/wiki)。
+
