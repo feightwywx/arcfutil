@@ -24,6 +24,22 @@ def dumps(notelist: note.NoteGroup, destpath: str):
         return faff.write(strnotelist)
 
 
+def extends(notelist: note.NoteGroup, destpath: str):
+    notelist = sorter.sort(notelist)
+    with open(destpath, 'a') as faff:
+        count = 0
+        if isinstance(notelist, note.TimingGroup):
+            faff.write(str(notelist))
+            faff.write('\n')
+            count += len(str(notelist)) + 1
+        else:
+            for each in notelist:
+                faff.write(str(each))
+                faff.write('\n')
+                count += len(str(each)) + 1
+        return count
+
+
 def __notestriter(notestr: str, termsign: str):
     return notestr[:notestr.find(termsign)]
 

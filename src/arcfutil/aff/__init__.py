@@ -33,6 +33,10 @@ def dumps(notelist: NoteGroup, destpath: str):
     return parser.dumps(notelist, destpath)
 
 
+def extends(notelist: NoteGroup, destpath: str):
+    return parser.extends(notelist, destpath)
+
+
 def load(affstr: str) -> list:
     """
     Decode Arcaea format stringto note objects.
