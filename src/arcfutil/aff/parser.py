@@ -44,7 +44,7 @@ def __notestriter(notestr: str, termsign: str):
     return notestr[:notestr.find(termsign)]
 
 
-def __loadline(notestr: str):
+def loadline(notestr: str):
     tempnotestr = notestr.strip()
     noteobj = None
     # 依次切割出note类型，参数，      子表达式（如果有）
@@ -89,7 +89,7 @@ def __loadline(notestr: str):
             fromy=float(paralist[5]),
             toy=float(paralist[6]),
             color=int(paralist[7]),
-            fx=paralist[8],
+            fx=None if paralist[8] == 'none' else paralist[8],
             isskyline=isskyline,
             skynote=skynotetimelist
         )
@@ -160,7 +160,7 @@ def load(affstr: str):
                 tempstruct = None
                 continue
             else:
-                loadednote = __loadline(stripedlinestr)
+                loadednote = loadline(stripedlinestr)
                 if isinstance(loadednote, note.TimingGroup):
                     if tempstruct is None:
                         tempstruct = loadednote

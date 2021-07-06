@@ -15,6 +15,21 @@ slideeasinglist = [
     'siso'
 ]
 
+slideeasingexlist = [
+    'bb',
+    'sb',
+    'sib',
+    'sob',
+    'bs',
+    'ss',
+    'sis',
+    'sos',
+    'bsi',
+    'ssi',
+    'bso',
+    'sso',
+]
+
 fxlist = [
     'full',
     'incremental'

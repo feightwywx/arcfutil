@@ -21,33 +21,33 @@ def dump(notelist: NoteGroup) -> str:
     return parser.dump(notelist)
 
 
-def dumps(notelist: NoteGroup, destpath: str):
+def dumps(notelist: NoteGroup, destpath: str) -> int:
     """
     Encode note objects to Arcaea fromat string, and write it to a file (usually a .aff file).
     NOTICE! If destpath point at a file which exists previously, EVERYTHING in it will be LOST!
 
     :param notelist: A list of note objects.
     :param destpath: Destination path of Arcaea format file.
-    :return: True when there's no exceptions.
+    :return: Length of written string.
     """
     return parser.dumps(notelist, destpath)
 
 
-def extends(notelist: NoteGroup, destpath: str):
+def extends(notelist: NoteGroup, destpath: str) -> int:
     return parser.extends(notelist, destpath)
 
 
-def load(affstr: str) -> list:
+def load(affstr: str) -> NoteGroup:
     """
     Decode Arcaea format stringto note objects.
 
     :param affstr:
-    :return:
+    :return: 
     """
     return parser.load(affstr)
 
 
-def loads(path: str) -> list:
+def loads(path: str) -> NoteGroup:
     """
     Decode Arcaea format file to note objects.
 
@@ -57,6 +57,10 @@ def loads(path: str) -> list:
     return parser.loads(path)
 
 
+def loadline(affstr: str) -> Note or NoteGroup:
+    return parser.loadline(affstr)
+
+
 # sorter
-def sort(unsorted: NoteGroup):
+def sort(unsorted: NoteGroup) -> NoteGroup:
     return sorter.sort(unsorted)

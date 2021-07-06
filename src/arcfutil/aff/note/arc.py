@@ -6,6 +6,7 @@
 
 from .easing import slicer
 from .hold import Hold
+from .common_note import NoteGroup
 from . import validstrings
 from ...exception import *
 
@@ -35,9 +36,10 @@ class Arc(Hold):
                 slicepara.append(slicetimepara[0][i] + slicepositionpara[i])
 
             notelist = [
-                Arc(time, totime, fromx, tox, self.slideeasing, fromy, toy, self.color, self.isskyline)
+                Arc(time, totime, fromx, tox, 's', fromy, toy, self.color, self.isskyline)
                 for time, totime, fromx, tox, fromy, toy in slicepara
             ]
+            notelist = NoteGroup(notelist)
             return notelist if slicetimepara[1] else notelist[0]
         elif isinstance(item, (int, float)):
             slice_x = slicer(item, self.time, self.totime, self.fromx, self.tox, easingtype[0])
@@ -45,6 +47,11 @@ class Arc(Hold):
             return slice_x, slice_y
 
     def __str__(self):
+        if self.slideeasing in validstrings.slideeasingexlist:
+            raise AffNoteValueError(
+                'value {} for attribute "slideeasing" is not allowed to output (only {} allowed)'.format(
+                    self.slideeasing, str(validstrings.slideeasinglist)
+                ))
         arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
                  '{isskyline})'.format(
                   time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
@@ -70,7 +77,8 @@ class Arc(Hold):
             if not 0 <= value <= 2:
                 raise AffNoteValueError('invalid value {} for attribute "color" (only accept 0~2)'.format(value))
         elif key == 'slideeasing':
-            if value not in validstrings.slideeasinglist:
+            exvalid = validstrings.slideeasinglist + validstrings.slideeasingexlist
+            if value not in exvalid:
                 raise AffNoteValueError('invalid value {} for attribute "slideeasing" (only accept {})'.format(
                     value, str(validstrings.slideeasinglist)
                 ))
@@ -85,7 +93,7 @@ class Arc(Hold):
         y_type = 's'
         se = self.slideeasing
 
-        if len(se) < 3 and se not in ['bb', 'bs', 'sb']:
+        if len(se) < 3 and se not in ['bb', 'bs', 'sb', 'ss']:
             x_type = se
             if se == 'b':
                 y_type = 'b'

@@ -74,3 +74,10 @@ def arc_rain(original_t: int, dest_t: int, step: int):
             True
         ))
     return destgroup
+
+
+def arc_slice_by_count(arc: Arc, count: int, start: int = None, stop: int = None):
+    start = start if start is not None else arc.time
+    stop = stop if stop is not None else arc.totime
+    step = int((stop - start) / count)
+    return arc[start:stop:step]
