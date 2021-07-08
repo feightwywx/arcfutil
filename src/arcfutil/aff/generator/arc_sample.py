@@ -50,7 +50,7 @@ def arc_crease_line(
     return arclist
 
 
-def arc_rain(original_t: int, dest_t: int, step: int):
+def arc_rain(original_t: int, dest_t: int, step: int, length: int = None):
     def max_x(y: int) -> int:
         return int(-0.5 * y + 200)
 
@@ -58,13 +58,15 @@ def arc_rain(original_t: int, dest_t: int, step: int):
         return int(0.5 * y)
 
     destgroup = NoteGroup()
+    if length is None:
+        length = step
 
     for current_time in range(original_t, dest_t, step):
         rand_y = randint(0, 100)
         rand_x = randint(min_x(rand_y), max_x(rand_y))
         destgroup.append(Arc(
             current_time,
-            current_time + step,
+            current_time + length,
             (rand_x - 50) / 100,
             (rand_x - 50) / 100,
             's',
