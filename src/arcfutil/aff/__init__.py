@@ -7,6 +7,7 @@
 from .note import *
 from . import parser
 from . import sorter
+from . import generator
 
 
 # parser

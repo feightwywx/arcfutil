@@ -133,3 +133,5 @@ dmypy.json
 
 test.py
 arcfutil_output/
+*DS_Store
+venv_win/

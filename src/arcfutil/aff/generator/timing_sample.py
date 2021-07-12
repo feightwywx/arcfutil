@@ -12,7 +12,8 @@ def timing_glitch(
         origin_t: int, dest_t: int, count: int, bpm_range: float, exact_bar: float = 4.00, zero_bar: float = 4.00
 ) -> NoteGroup:
     destgroup = NoteGroup()
-    count -= 1
+    if count > 1:
+        count -= 1
     stept = (dest_t - origin_t) / count
     t = origin_t
     exactbpm = -bpm_range
@@ -28,7 +29,8 @@ def timing_easing_linear(
         origin_t: int, dest_t: int, origin_bpm: float, dest_bpm: float, count: int,  bar: float = 4.00
 ) -> NoteGroup:
     destgroup = NoteGroup()
-    count -= 1
+    if count > 1:
+        count -= 1
     stept = (dest_t - origin_t) / count
     stepbpm = (dest_bpm - origin_bpm) / count
     for i in range(count + 1):

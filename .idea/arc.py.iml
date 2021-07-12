@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/src/arcfutil_dotdirewolf.egg-info" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/venv_win" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.8 (arcfutil)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

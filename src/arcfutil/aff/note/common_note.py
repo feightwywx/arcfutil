@@ -39,7 +39,7 @@ class NoteGroup(list):
         list.__init__(self)
         super(NoteGroup, self).__init__()
         for each in notes:
-            if isinstance(each, (list, tuple)) and not isinstance(each, NoteGroup):
+            if isinstance(each, (list, tuple)) and type(each).__name__ != 'TimingGroup':
                 self.extend(each)
             else:
                 self.append(each)
