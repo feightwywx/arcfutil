@@ -81,5 +81,22 @@ def arc_rain(original_t: int, dest_t: int, step: int, length: int = None):
 def arc_slice_by_count(arc: Arc, count: int, start: int = None, stop: int = None):
     start = start if start is not None else arc.time
     stop = stop if stop is not None else arc.totime
-    step = int((stop - start) / count)
-    return arc[start:stop:step]
+    step = (stop - start) / count
+    if step < 1:
+        step = 1
+        count = arc.totime - arc.time
+    destgroup = NoteGroup()
+    for i in range(count):
+        destgroup.append(Arc(
+            arc.time + i * step,
+            arc.time + (i + 1) * step,
+            arc[arc.time + i * step][0],
+            arc[arc.time + (i + 1) * step][0],
+            's',
+            arc[arc.time + i * step][1],
+            arc[arc.time + (i + 1) * step][1],
+            arc.color,
+            arc.isskyline,
+            arc.fx
+        ))
+    return destgroup
