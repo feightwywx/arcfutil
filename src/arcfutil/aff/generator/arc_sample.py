@@ -7,6 +7,7 @@
 from ..note import Arc
 from ..note import NoteGroup
 from random import randint
+from ...exception import AffNoteValueError
 
 
 def arc_crease_line(
@@ -14,9 +15,11 @@ def arc_crease_line(
         x_range: float,
         y_range: float,
         count: int,
-        mode='m'
+        mode='m',
+        easing='s'
 ) -> NoteGroup:
     """
+    :param easing:
     :param base:
     :param x_range:
     :param y_range:
@@ -35,6 +38,7 @@ def arc_crease_line(
             each.fromy = currenty
             each.tox += x_range
             each.toy += y_range
+            each.slideeasing = easing
             x_range = -x_range
             y_range = -y_range
             currentx = each.tox
@@ -45,6 +49,8 @@ def arc_crease_line(
             arclist[i - 1].tox += x_range
             arclist[i].fromy += y_range
             arclist[i - 1].toy += y_range
+            arclist[i].slideeasing = easing
+            arclist[i - 1].slideeasing = easing
     else:
         raise ValueError('Invalid mode:' + mode)
     return arclist
@@ -81,6 +87,10 @@ def arc_rain(original_t: int, dest_t: int, step: int, length: int = None):
 def arc_slice_by_count(arc: Arc, count: int, start: int = None, stop: int = None):
     start = start if start is not None else arc.time
     stop = stop if stop is not None else arc.totime
+    if stop < start:
+        raise AffNoteValueError(
+            'stop time before start time'
+        )
     step = (stop - start) / count
     if step < 1:
         step = 1
@@ -88,15 +98,15 @@ def arc_slice_by_count(arc: Arc, count: int, start: int = None, stop: int = None
     destgroup = NoteGroup()
     for i in range(count):
         destgroup.append(Arc(
-            arc.time + i * step,
-            arc.time + (i + 1) * step,
-            arc[arc.time + i * step][0],
-            arc[arc.time + (i + 1) * step][0],
+            start + i * step,
+            start + (i + 1) * step,
+            arc[start + i * step][0],
+            arc[start + (i + 1) * step][0],
             's',
-            arc[arc.time + i * step][1],
-            arc[arc.time + (i + 1) * step][1],
+            arc[start + i * step][1],
+            arc[start + (i + 1) * step][1],
             arc.color,
             arc.isskyline,
-            arc.fx
+            fx=arc.fx
         ))
     return destgroup
