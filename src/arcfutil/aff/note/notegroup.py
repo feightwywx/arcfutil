@@ -31,7 +31,7 @@ class AffList(NoteGroup):
         for each in self:
             if each is not None:
                 each.offsetto(value)
-        self.append(Timing(0, basebpm, 4))
+        self.insert(0, Timing(0, basebpm, 4))
         return sort(self)
 
 
@@ -64,6 +64,6 @@ class TimingGroup(NoteGroup):
         for each in self:
             if each is not None:
                 each.offsetto(value)
-        self.append(Timing(0, basebpm, 4))
+        self.insert(0, Timing(0, basebpm, 4))
         return sort(self)
 

@@ -30,9 +30,6 @@ class Note:
         self.time += value
         return self
 
-    def type(self):
-        return type(self).__name__
-
 
 class NoteGroup(list):
     def __init__(self, *notes):
@@ -69,6 +66,3 @@ class NoteGroup(list):
             if each is not None:
                 each.moveto(dest)
         return self
-
-    def type(self):
-        return type(self).__name__
