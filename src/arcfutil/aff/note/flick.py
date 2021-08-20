@@ -17,5 +17,5 @@ class Flick(Note):
 
     def __str__(self):
         return 'flick({time},{x:.2f},{y:.2f},{dx:.2f},{dy:.2f});'.format(
-            time=self.time, x=self.x, y=self.y, dx=self.dx, dy=self.dy
+            time=int(self.time), x=self.x, y=self.y, dx=self.dx, dy=self.dy
         )
