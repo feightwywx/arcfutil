@@ -153,7 +153,7 @@ def load(affstr: str):
                 notelist.offset = int(stripedlinestr[stripedlinestr.index(':') + 1:])
                 continue
             elif stripedlinestr.startswith('TimingPointDensityFactor'):
-                notelist.desnity = int(stripedlinestr[stripedlinestr.index(':') + 1:])
+                notelist.desnity = float(stripedlinestr[stripedlinestr.index(':') + 1:])
                 continue
             elif stripedlinestr == '};':
                 notelist.append(tempstruct)

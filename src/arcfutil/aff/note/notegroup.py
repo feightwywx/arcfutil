@@ -11,15 +11,15 @@ from ..sorter import sort
 
 
 class AffList(NoteGroup):
-    def __init__(self, *notes, offset: int = 0, desinty: int = 1):
+    def __init__(self, *notes, offset: int = 0, desnity: float = 1):
         super(AffList, self).__init__(*notes)
         self.offset: int = offset
-        self.desnity: int = desinty
+        self.desnity: float = desnity
 
     def __str__(self):
         return ''.join([
             'AudioOffset:{:d}\n'.format(int(self.offset)),
-            'TimingPointDensityFactor:{:d}\n'.format(int(self.desnity)) if self.desnity != 1 else '',
+            'TimingPointDensityFactor:{:.3f}\n'.format(float(self.desnity)) if self.desnity != 1 else '',
             '-\n'
         ]) + super().__str__()
 
