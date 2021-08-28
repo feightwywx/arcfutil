@@ -4,6 +4,7 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
+from math import modf
 from .common_note import Note
 from .common_note import NoteGroup
 from .timing import Timing
@@ -17,9 +18,18 @@ class AffList(NoteGroup):
         self.desnity: float = desnity
 
     def __str__(self):
+        if self.desnity == 1:
+            tsdfstring = None
+        else:
+            tsdfstring = 'TimingPointDensityFactor:'
+            mod_des = modf(self.desnity)
+            if mod_des[0] == 0:
+                tsdfstring = 'TimingPointDensityFactor:{:d}\n'.format(int(self.desnity))
+            else:
+                tsdfstring = 'TimingPointDensityFactor:{:.3f}\n'.format(float(self.desnity))
         return ''.join([
             'AudioOffset:{:d}\n'.format(int(self.offset)),
-            'TimingPointDensityFactor:{:.3f}\n'.format(float(self.desnity)) if self.desnity != 1 else '',
+            tsdfstring if tsdfstring is not None else '',
             '-\n'
         ]) + super().__str__()
 
