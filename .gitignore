@@ -130,6 +130,7 @@ dmypy.json
 
 # Visual Studio Code
 .vscode/
+.idea/
 
 test.py
 arcfutil_output/
