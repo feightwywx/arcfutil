@@ -23,7 +23,8 @@ setuptools.setup(
     entry_points={"console_scripts": [
         "arcfutil = arcfutil.cli:main",
         "songlist = arcfutil.songlist:main",
-        "sortassets = arcfutil.sortassets:main"
+        "sortassets = arcfutil.sortassets:main",
+        "arcadeclean = arcfutil.arcade_cleam:main"
         ]
     }
 )
