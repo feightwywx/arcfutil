@@ -4,6 +4,7 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
+from typing import Iterable
 from arcfutil.aff.note.notegroup import TimingGroup
 from ..note import Arc
 from ..note import NoteGroup
@@ -119,6 +120,42 @@ def arc_slice_by_count(arc: Arc, count: int, start: int = None, stop: int = None
             arc.isskyline,
             fx=arc.fx
         ))
+    return destgroup
+
+
+def arc_slice_by_timing(arc: Arc, timings: Iterable):
+    timepoints = {arc.time, arc.totime}
+    for each in timings:
+        if isinstance(each, Timing):
+            timepoints.add(each.time)
+    timepoints = sorted(timepoints)
+
+    destgroup = NoteGroup()
+    for i in range(len(timepoints) - 1):
+        from_time = timepoints[i]
+        to_time = timepoints[i + 1]
+        from_slice = arc[from_time]
+        to_slice = arc[to_time]
+        temp_arc = Arc(
+            from_time,
+            to_time,
+            from_slice[0],
+            to_slice[0],
+            's',
+            from_slice[1],
+            to_slice[1],
+            arc.color,
+            arc.isskyline
+        )
+        if arc.isskyline and arc.skynote:
+            valid_skynotes = []
+            for each in arc.skynote:
+                if from_time <= each < to_time:
+                    valid_skynotes.append(each)
+                elif each == to_time and i == (len(timepoints) - 2):  # 黑线末尾的天键
+                    valid_skynotes.append(each)
+            temp_arc.skynote = valid_skynotes
+        destgroup.append(temp_arc)
     return destgroup
 
 
