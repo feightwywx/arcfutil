@@ -68,6 +68,17 @@ def bezier(percent, p1x: float = 1/3, p1y: float = 0, p2x: float = 2/3, p2y: flo
     return ((ay * t + by) * t + cy) * t
 
 
+def get_ease(percent: float, type: str, b_point: list = [1/3, 0, 2/3, 1]) -> float:
+    if type == 's':
+        return percent
+    elif type == 'si':
+        return sine(percent)
+    elif type == 'so':
+        return cosine(percent)
+    elif type == 'b':
+        return bezier(percent, b_point[0], b_point[1], b_point[2], b_point[3])
+
+
 # @__checker
 def slicer(time, fromtime, totime, fromposition, toposition, easingtype='s'):
     t_offset = fromtime

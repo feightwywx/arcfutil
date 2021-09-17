@@ -4,10 +4,15 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
+from arcfutil.aff.note.notegroup import TimingGroup
 from ..note import Arc
 from ..note import NoteGroup
+from ..note import SceneControl
+from ..note import Timing
 from random import randint
 from ...exception import AffNoteValueError
+from ..note.easing import get_ease
+from copy import deepcopy
 
 
 def arc_crease_line(
@@ -115,3 +120,61 @@ def arc_slice_by_count(arc: Arc, count: int, start: int = None, stop: int = None
             fx=arc.fx
         ))
     return destgroup
+
+
+def arc_animation_assist(
+    arc: Arc,
+    start_t: int,
+    stop_t: int,
+    delta_x: float,
+    delta_y: float,
+    basebpm: float,
+    easing_x: str = 's',
+    easing_b_point_x: list = [1/3, 0, 2/3, 1],
+    easing_y: str = 's',
+    easing_b_point_y: list = [1/3, 0, 2/3, 1],
+    infbpm: float = 999999,
+    framerate: float = 60,
+    fake_note_t: int = 100000,
+    offset_t: int = 0,
+    delta_offset_t = 0,
+    easing_offset_t: str = 's',
+    easing_b_point_offset_t: list = [1/3, 0, 2/3, 1]
+) -> NoteGroup:
+    delta_t = 1000 / framerate
+    count = int((stop_t - start_t) / delta_t)
+    
+    destgroup = NoteGroup()
+    for i in range(count + 1):
+        frame = TimingGroup(Timing(0, basebpm), opt='noinput')
+
+        # 这一帧的起始时间
+        t1 = start_t + i * delta_t
+        frame.append(Timing(t1 , infbpm))
+        frame.append(Timing(t1 + 1, 0))
+
+        # 这一帧结束
+        frame.append(Timing(t1 + delta_t, -infbpm))
+        frame.append(Timing(t1 + delta_t + 1, 0))
+        frame.append(SceneControl(t1 + 2 * delta_t, 'hidegroup', y=1))  # 隐藏时间略晚于倒退时间
+
+        # 真正显示的假note
+        actual_offset_t = fake_note_t - (
+            offset_t - delta_offset_t * get_ease(
+                i / count, easing_offset_t, easing_b_point_offset_t
+        ))
+        frame.append(Timing(actual_offset_t, infbpm))
+        frame.append(Timing(actual_offset_t + 1, basebpm))
+        temp_arc = deepcopy(arc)
+        temp_arc = temp_arc.offsetto(fake_note_t)
+        temp_arc.fromx += delta_x * get_ease(i / count, easing_x, easing_b_point_x)
+        temp_arc.tox += delta_x * get_ease(i / count, easing_x, easing_b_point_x)
+        temp_arc.fromy += delta_y * get_ease(i / count, easing_y, easing_b_point_y)
+        temp_arc.toy += delta_y * get_ease(i / count, easing_y, easing_b_point_y)
+        frame.append(temp_arc)
+
+        destgroup.append(frame)
+
+    return destgroup
+
+
