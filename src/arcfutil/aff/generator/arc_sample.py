@@ -126,7 +126,7 @@ def arc_slice_by_count(arc: Arc, count: int, start: int = None, stop: int = None
 def arc_slice_by_timing(arc: Arc, timings: Iterable):
     timepoints = {arc.time, arc.totime}
     for each in timings:
-        if isinstance(each, Timing):
+        if isinstance(each, Timing) and arc.time <= each.time <= arc.totime:
             timepoints.add(each.time)
     timepoints = sorted(timepoints)
 
