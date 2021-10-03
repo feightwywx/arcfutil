@@ -2,17 +2,23 @@
 
 (a.k.a. Arcaea File Utility)
 
-为处理Arcaea相关文件（谱面，songlist，etc.）设计的Python模块。
+为处理[音乐游戏Arcaea](https://arcaea.lowiro.com/)相关文件（谱面，songlist，etc.）设计的Python模块。
 
 ## 安装
 
 使用pip进行安装：
-```commandline
+
+```bash
 pip install -U arcfutil
 ```
 
 ## 功能
+
 ~~同时也是Todo list~~
+
+本模块大致分为处理.aff文件的`arcfutil.aff`包和命令行工具两部分。
+
+### `aff`包
 
 - [x] 将`.aff`中的note解析为python对象（以及将这些对象编码回`.aff`中的note格式）
 
@@ -24,9 +30,15 @@ pip install -U arcfutil
   
   - [x] 为note对象提供了谱面编辑中的常用方法（复制、镜像、偏移等）
 
-- [x] 对Arcaea下载的数据文件进行整理，方便制谱器读取。
+  - [x] 提供Timing缓动、帧动画等常用谱面片段的构造工具
 
-- [x] 根据`songconfig.txt`自动生成`songlist`
+### 命令行工具
+
+- [x] `arcadeclean`：清理Arcade产生的多余文件！
+
+- [x] `sortassets`：对Arcaea下载的数据文件进行整理，方便制谱器读取。
+
+- [x] `songlist`：根据`songconfig.txt`自动生成`songlist`
 
   - [x] 兼容`Brcbeb Soulmate`等生成工具使用的`songconfig.txt`
 
@@ -37,6 +49,7 @@ pip install -U arcfutil
   - [x] 自动复制曲目背景
   
 ## 用法
-  
-请参阅[文档](https://github.com/feightwywx/arcfutil/wiki)。
 
+对于命令行工具，使用`-h`或者`--help`开关来查看用法。
+  
+对于`aff`模块，请参阅[快速上手教程](https://github.com/feightwywx/arcfutil/wiki/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B---aff%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C)。

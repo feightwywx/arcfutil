@@ -24,7 +24,7 @@ setuptools.setup(
         "arcfutil = arcfutil.cli:main",
         "songlist = arcfutil.songlist:main",
         "sortassets = arcfutil.sortassets:main",
-        "arcadeclean = arcfutil.arcade_cleam:main"
+        "arcadeclean = arcfutil.arcade_clean:main"
         ]
     }
 )
