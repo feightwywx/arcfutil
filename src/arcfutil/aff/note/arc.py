@@ -7,6 +7,7 @@
 from .easing import slicer
 from .hold import Hold
 from .common_note import NoteGroup
+from .common_note import timeAlign
 from . import validstrings
 from ...exception import *
 
@@ -151,7 +152,14 @@ class Arc(Hold):
             for each in enumerate(self.skynote):
                 self.skynote[each[0]] += value
         return self
-
+        
+    def align(self, fpb: float, error: int):
+        super(Arc, self).align(fpb, error)
+        if self.skynote:
+            for each in enumerate(self.skynote):
+                self.skynote[each[0]] = timeAlign(self.skynote[each[0]], fpb, error)
+        return self
+    
     def transfer(self, x_value: float, y_value: float):
         self.fromx += x_value
         self.tox += x_value
