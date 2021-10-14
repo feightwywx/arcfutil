@@ -5,7 +5,7 @@
 # Licensed under the MIT License.
 
 from .tap import Tap
-from .common_note import timeAlign
+from .common_note import time_align
 from ...exception import *
 
 
@@ -72,7 +72,7 @@ class Hold(Tap):
         self.totime += value
         return self
         
-    def align(self, fpb: float, error: int):
-        super(Hold, self).align(fpb, error)
-        self.totime = timeAlign(self.totime, fpb, error)
+    def align(self, bpm: float, error: int = 3, lcd = 96):
+        super(Hold, self).align(bpm, error, lcd)
+        self.totime = time_align(self.totime, bpm, error, lcd)
         return self

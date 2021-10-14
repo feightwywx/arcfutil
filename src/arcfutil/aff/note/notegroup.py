@@ -44,6 +44,7 @@ class AffList(NoteGroup):
         self.insert(0, Timing(0, basebpm, 4))
         return sort(self)
 
+
 class TimingGroup(NoteGroup):
     def __init__(self, *notes, opt=None):
         super(TimingGroup, self).__init__(*notes)
@@ -75,4 +76,3 @@ class TimingGroup(NoteGroup):
                 each.offsetto(value)
         self.insert(0, Timing(0, basebpm, 4))
         return sort(self)
-

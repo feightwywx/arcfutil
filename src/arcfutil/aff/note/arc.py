@@ -7,7 +7,7 @@
 from .easing import slicer
 from .hold import Hold
 from .common_note import NoteGroup
-from .common_note import timeAlign
+from .common_note import time_align
 from . import validstrings
 from ...exception import *
 
@@ -153,11 +153,11 @@ class Arc(Hold):
                 self.skynote[each[0]] += value
         return self
         
-    def align(self, fpb: float, error: int):
-        super(Arc, self).align(fpb, error)
+    def align(self, bpm: float, error: int = 3, lcd = 96):
+        super(Arc, self).align(bpm, error, lcd)
         if self.skynote:
             for each in enumerate(self.skynote):
-                self.skynote[each[0]] = timeAlign(self.skynote[each[0]], fpb, error)
+                self.skynote[each[0]] = time_align(self.skynote[each[0]], bpm, error, lcd)
         return self
     
     def transfer(self, x_value: float, y_value: float):

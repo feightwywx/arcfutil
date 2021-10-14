@@ -6,29 +6,30 @@
 
 from copy import deepcopy
 
-def timeAlign(time: int, fpb: float, error: int):
-	alignedTime = 0
-	atime1 = round(time//fpb*fpb) #向下取grid时间戳
-	atime2 = round((time//fpb+1)*fpb) #向上取grid时间戳
-	abs1 = abs(time - atime1) #atime1与time的距离
-	abs2 = abs(time - atime2)
-	ok1 = (abs1 <= error) #abs1是否在容差内
-	ok2 = (abs2 <= error)
-	if ok1 & ok2:
-		#哪个距离小就用哪个
-		if abs1 > abs2:
-			ok1 = 0
-	
-	if ok1:
-		alignedTime = atime1
-	elif ok2:
-		alignedTime = atime2
-	else:
-		#都不能用那就不动它吧
-		alignedTime = time
-	
-	#print(time, fpb, atime1, atime2, abs1, abs2, ok1, ok2, alignedTime)
-	return alignedTime
+
+def time_align(time: int, bpm: float, error: int = 3, lcd = 96):
+    fpb = 60000 * 4 / bpm / lcd
+    alignedTime = 0
+    atime1 = round(time//fpb*fpb) #向下取grid时间戳
+    atime2 = round((time//fpb+1)*fpb) #向上取grid时间戳
+    abs1 = abs(time - atime1) #atime1与time的距离
+    abs2 = abs(time - atime2)
+    ok1 = (abs1 <= error) #abs1是否在容差内
+    ok2 = (abs2 <= error)
+    if ok1 & ok2:
+        #哪个距离小就用哪个
+        if abs1 > abs2:
+            ok1 = 0
+    
+    if ok1:
+        alignedTime = atime1
+    elif ok2:
+        alignedTime = atime2
+    else:
+        #都不能用那就不动它吧
+        alignedTime = time
+    
+    return alignedTime
 
 class Note:
     def __init__(self, time: int):
@@ -53,10 +54,11 @@ class Note:
         self.time += value
         return self
         
-    def align(self, fpb: float, error: int):
-        self.time = timeAlign(self.time, fpb, error)
+    def align(self, bpm: float, error: int = 3, lcd = 96):
+        self.time = time_align(self.time, bpm, error, lcd)
         return self
         
+
 class NoteGroup(list):
     def __init__(self, *notes):
         list.__init__(self)
@@ -93,8 +95,8 @@ class NoteGroup(list):
                 each.moveto(dest)
         return self
         
-    def align(self, fpb: int, error: int):
+    def align(self, bpm: float, error: int = 3, lcd = 96):
         for each in self:
             if each is not None:
-                each.align(fpb, error)
+                each.align(bpm, error, lcd)
         return self
