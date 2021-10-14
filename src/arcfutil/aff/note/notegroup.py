@@ -76,4 +76,3 @@ class TimingGroup(NoteGroup):
                 each.offsetto(value)
         self.insert(0, Timing(0, basebpm, 4))
         return sort(self)
-

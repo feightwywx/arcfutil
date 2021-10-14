@@ -5,6 +5,7 @@
 # Licensed under the MIT License.
 
 from .tap import Tap
+from .common_note import time_align
 from ...exception import *
 
 
@@ -69,4 +70,9 @@ class Hold(Tap):
     def offsetto(self, value: int):
         super(Hold, self).offsetto(value)
         self.totime += value
+        return self
+        
+    def align(self, bpm: float, error: int = 3, lcd = 96):
+        super(Hold, self).align(bpm, error, lcd)
+        self.totime = time_align(self.totime, bpm, error, lcd)
         return self
