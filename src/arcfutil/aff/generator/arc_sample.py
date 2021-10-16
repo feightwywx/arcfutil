@@ -191,8 +191,8 @@ def arc_animation_assist(
         frame.append(Timing(t1 + 1, 0))
 
         # 这一帧结束
-        frame.append(Timing(t1 + delta_t, -infbpm))
-        frame.append(Timing(t1 + delta_t + 1, 0))
+        frame.append(Timing(t1 + delta_t - 1, -infbpm))
+        frame.append(Timing(t1 + delta_t, 0))
         frame.append(SceneControl(t1 + 2 * delta_t, 'hidegroup', y=1))  # 隐藏时间略晚于倒退时间
 
         # 真正显示的假note
