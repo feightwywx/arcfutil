@@ -50,6 +50,4 @@ pip install -U arcfutil
   
 ## 用法
 
-对于命令行工具，使用`-h`或者`--help`开关来查看用法。
-  
-对于`aff`模块，请参阅[快速上手教程](https://github.com/feightwywx/arcfutil/wiki/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B---aff%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C)。
+请参阅[文档](https://docs.arcaea.icu/)。
