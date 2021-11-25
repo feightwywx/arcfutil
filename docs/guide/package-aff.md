@@ -194,9 +194,10 @@ arcfutil对Note容器也提供了各种方法。例如对前文所述的`AffList
 afflist.density = 2
 ```
 
-将AffList时间整体偏移300ms：
+将AffList时间整体偏移300ms，并且整体镜像：
 ```python
 afflist.offsetto(300)
+afflist.mirror()
 ```
 
 ## 生成函数

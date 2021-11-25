@@ -17,7 +17,9 @@ Note相关类。
 
 ### 原型
 
-`arcfutil.aff.note.notegroup.AffList(NoteGroup)`
+`arcfutil.aff.note.common_note.NoteGroup(list)`
+
+--`arcfutil.aff.note.notegroup.AffList(NoteGroup)`
 
 ### 构造函数
 
@@ -83,6 +85,18 @@ Note容器内所有Note的Note语句形式字符串。如果`desnity`属性为`1
 
 `None`
 
+#### `mirror()`
+
+将Note容器内部所有Note镜像。
+
+##### 参数
+
+无。
+
+##### 返回值
+
+镜像后的Note容器。
+
 #### `moveto()`
 
 将Note容器整体偏移到一个时间点。
@@ -115,7 +129,13 @@ Note容器内所有Note的Note语句形式字符串。如果`desnity`属性为`1
 
 ### 原型
 
-`arcfutil.aff.note.arc.Arc(Hold)`
+`arcfutil.aff.note.common_note.Note`
+
+--`arcfutil.aff.note.tap.Tap(Note)`
+
+----`arcfutil.aff.note.tap.Hold(Tap)`
+
+------`arcfutil.aff.note.arc.Arc(Hold)`
 
 ### 构造函数
 
@@ -282,7 +302,9 @@ Note对象的深拷贝。
 
 ### 原型
 
-`arcfutil.aff.note.camera.Camera(Note)`
+`arcfutil.aff.note.common_note.Note`
+
+--`arcfutil.aff.note.camera.Camera(Note)`
 
 ### 构造函数
 
@@ -392,7 +414,9 @@ Note对象的深拷贝。
 
 ### 原型
 
-`arcfutil.aff.note.flick.Flick(Note)`
+`arcfutil.aff.note.common_note.Note`
+
+--`arcfutil.aff.note.flick.Flick(Note)`
 
 ### 构造函数
 
@@ -494,7 +518,11 @@ Note对象的深拷贝。
 
 ### 原型
 
-`arcfutil.aff.note.tap.Hold(Tap)`
+`arcfutil.aff.note.common_note.Note`
+
+--`arcfutil.aff.note.tap.Tap(Note)`
+
+----`arcfutil.aff.note.tap.Hold(Tap)`
 
 ### 构造函数
 
@@ -780,6 +808,18 @@ Note容器内所有Note的Note语句形式字符串。
 
 `None`
 
+#### `mirror()`
+
+将Note容器内部所有Note镜像。
+
+##### 参数
+
+无。
+
+##### 返回值
+
+镜像后的Note容器。
+
 #### `moveto()`
 
 将Note容器整体偏移到一个时间点。
@@ -798,7 +838,9 @@ Note容器内所有Note的Note语句形式字符串。
 
 ### 原型
 
-`arcfutil.aff.note.scenecontrol.SceneControl(Note)`
+`arcfutil.aff.note.common_note.Note`
+
+--`arcfutil.aff.note.scenecontrol.SceneControl(Note)`
 
 ### 构造函数
 
@@ -899,7 +941,9 @@ Note对象的深拷贝。
 
 ### 原型
 
-`arcfutil.aff.note.tap.Tap(Note)`
+`arcfutil.aff.note.common_note.Note`
+
+--`arcfutil.aff.note.tap.Tap(Note)`
 
 ### 构造函数
 
@@ -1006,7 +1050,9 @@ Note对象的深拷贝。
 
 ### 原型
 
-`arcfutil.aff.note.timing.Timing(Note)`
+`arcfutil.aff.note.common_note.Note`
+
+--`arcfutil.aff.note.timing.Timing(Note)`
 
 ### 构造函数
 
@@ -1106,7 +1152,9 @@ Note对象的深拷贝。
 
 ### 原型
 
-`arcfutil.aff.note.notegroup.TimingGroup(NoteGroup)`
+`arcfutil.aff.note.common_note.NoteGroup(list)`
+
+--`arcfutil.aff.note.notegroup.TimingGroup(NoteGroup)`
 
 ### 构造函数
 
@@ -1170,6 +1218,18 @@ Note容器内所有Note的Note语句形式字符串。
 ##### 返回值
 
 `None`
+
+#### `mirror()`
+
+将Note容器内部所有Note镜像。
+
+##### 参数
+
+无。
+
+##### 返回值
+
+镜像后的Note容器。
 
 #### `moveto()`
 
