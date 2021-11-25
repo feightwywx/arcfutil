@@ -95,6 +95,12 @@ class NoteGroup(list):
                 each.moveto(dest)
         return self
         
+    def mirror(self):
+        for each in self:
+            if each is not None:
+                each.mirror()
+        return self
+
     def align(self, bpm: float, error: int = 3, lcd = 96):
         for each in self:
             if each is not None:
