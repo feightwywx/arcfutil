@@ -214,6 +214,8 @@ arcfutil还提供了一些便于机械化生成谱面段落的函数，它们位
 
 - `arc_animation_assist()`: 逐帧动画辅助。
 
+- `arc_envelope()`: 以两条Arc为包络线，生成一条新的折线Arc。
+
 - `timing_glitch()`: 原地抖动的Timing
 
 - `timing_easing()`: 缓动Timing

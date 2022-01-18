@@ -4,7 +4,7 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
-from typing import Iterable
+from typing import Iterable, List
 from arcfutil.aff.note.notegroup import TimingGroup
 from ..note import Arc
 from ..note import NoteGroup
@@ -180,34 +180,39 @@ def arc_animation_assist(
 ) -> NoteGroup:
     delta_t = 1000 / framerate
     count = int((stop_t - start_t) / delta_t)
-    
+
     destgroup = NoteGroup()
     for i in range(count + 1):
         frame = TimingGroup(Timing(0, basebpm), opt='noinput')
 
         # 这一帧的起始时间
         t1 = start_t + i * delta_t
-        frame.append(Timing(t1 , infbpm))
+        frame.append(Timing(t1, infbpm))
         frame.append(Timing(t1 + 1, 0))
 
         # 这一帧结束
         frame.append(Timing(t1 + delta_t - 1, -infbpm))
         frame.append(Timing(t1 + delta_t, 0))
-        frame.append(SceneControl(t1 + 2 * delta_t, 'hidegroup', y=1))  # 隐藏时间略晚于倒退时间
+        frame.append(SceneControl(t1 + 2 * delta_t,
+                     'hidegroup', y=1))  # 隐藏时间略晚于倒退时间
 
         # 真正显示的假note
         actual_offset_t = fake_note_t - (
             offset_t - delta_offset_t * get_ease(
                 i / count, easing_offset_t, easing_b_point_offset_t
-        ))
+            ))
         frame.append(Timing(actual_offset_t, infbpm))
         frame.append(Timing(actual_offset_t + 1, basebpm))
         temp_arc = deepcopy(arc)
         temp_arc = temp_arc.offsetto(fake_note_t)
-        temp_arc.fromx += delta_x * get_ease(i / count, easing_x, easing_b_point_x)
-        temp_arc.tox += delta_x * get_ease(i / count, easing_x, easing_b_point_x)
-        temp_arc.fromy += delta_y * get_ease(i / count, easing_y, easing_b_point_y)
-        temp_arc.toy += delta_y * get_ease(i / count, easing_y, easing_b_point_y)
+        temp_arc.fromx += delta_x * \
+            get_ease(i / count, easing_x, easing_b_point_x)
+        temp_arc.tox += delta_x * \
+            get_ease(i / count, easing_x, easing_b_point_x)
+        temp_arc.fromy += delta_y * \
+            get_ease(i / count, easing_y, easing_b_point_y)
+        temp_arc.toy += delta_y * \
+            get_ease(i / count, easing_y, easing_b_point_y)
         frame.append(temp_arc)
 
         destgroup.append(frame)
@@ -215,3 +220,29 @@ def arc_animation_assist(
     return destgroup
 
 
+def arc_envelope(a1: Arc, a2: Arc, count: int) -> NoteGroup:
+    class Point:
+        def __init__(self, time, position) -> None:
+            self.time: int = time
+            self.x: float = position[0]
+            self.y: float = position[1]
+
+    arcs: List[Arc] = [a1, a2]
+    easing, color, isskyline = a1.slideeasing, a1.color, a1.isskyline
+    points: List[Point] = []
+
+    for i in range(count + 1):
+        index = i % 2
+        arc = arcs[index]
+        step = (arc.totime - arc.time) / (count)
+        current_time = arc.time + step * i
+        points.append(Point(current_time, arc[current_time]))
+
+    zipped = []
+    for i in range(len(points) - 1):
+        zipped.append((points[i], points[i+1]))
+
+    return NoteGroup(map(lambda p: Arc(
+        p[0].time, p[1].time, p[0].x, p[1].x, easing, p[0].y, p[1].y, color, isskyline
+    ), zipped)
+    )

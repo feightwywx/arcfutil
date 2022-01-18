@@ -64,6 +64,26 @@ aff片段生成函数。
 
 `(NoteGroup)` 生成的Note。
 
+## `arc_envelope()`
+
+以两条Arc为包络线，生成一条新的折线Arc。
+
+### 原型
+
+`arcfutil.aff.generator.arc_sample.arc_envelope(...) -> NoteGroup`
+
+### 参数
+
+|参数名|类型|说明|默认值|
+|--|--|--|--|
+|arc1|Arc|主包络线，决定了新Arc的起点，缓动类型，颜色和虚实|
+|arc2|Arc|副包络线|
+|count|int|切分数量|
+
+### 返回值
+
+`(NoteGroup)` 生成的Note。
+
 ## `arc_rain()`
 
 生成下雨黑线。

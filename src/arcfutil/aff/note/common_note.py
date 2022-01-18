@@ -5,6 +5,7 @@
 # Licensed under the MIT License.
 
 from copy import deepcopy
+from typing import Iterable
 
 
 def time_align(time: int, bpm: float, error: int = 3, lcd = 96):
@@ -64,7 +65,7 @@ class NoteGroup(list):
         list.__init__(self)
         super(NoteGroup, self).__init__()
         for each in notes:
-            if isinstance(each, (list, tuple)) and type(each).__name__ != 'TimingGroup':
+            if isinstance(each, Iterable) and type(each).__name__ != 'TimingGroup':
                 self.extend(each)
             else:
                 self.append(each)
