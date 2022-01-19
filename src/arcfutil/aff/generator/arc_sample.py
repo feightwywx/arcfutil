@@ -4,14 +4,14 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
-from typing import Iterable, List
+from typing import Iterable, List, Literal
 from arcfutil.aff.note.notegroup import TimingGroup
 from ..note import Arc
 from ..note import NoteGroup
 from ..note import SceneControl
 from ..note import Timing
 from random import randint
-from ...exception import AffNoteValueError
+from ...exception import AffNoteTypeError, AffNoteValueError
 from ..note.easing import get_ease
 from copy import deepcopy
 
@@ -220,7 +220,7 @@ def arc_animation_assist(
     return destgroup
 
 
-def arc_envelope(a1: Arc, a2: Arc, count: int) -> NoteGroup:
+def arc_envelope(a1: Arc, a2: Arc, count: int, mode: Literal['c', 'p'] = 'c') -> NoteGroup:
     class Point:
         def __init__(self, time, position) -> None:
             self.time: int = time
@@ -231,18 +231,63 @@ def arc_envelope(a1: Arc, a2: Arc, count: int) -> NoteGroup:
     easing, color, isskyline = a1.slideeasing, a1.color, a1.isskyline
     points: List[Point] = []
 
-    for i in range(count + 1):
-        index = i % 2
-        arc = arcs[index]
-        step = (arc.totime - arc.time) / (count)
-        current_time = arc.time + step * i
-        points.append(Point(current_time, arc[current_time]))
+    if mode == 'c':
+        for i in range(count + 1):
+            index = i % 2
+            arc = arcs[index]
+            step = (arc.totime - arc.time) / (count)
+            current_time = arc.time + step * i
+            points.append(Point(current_time, arc[current_time]))
 
-    zipped = []
-    for i in range(len(points) - 1):
-        zipped.append((points[i], points[i+1]))
+        zipped = []
+        for i in range(len(points) - 1):
+            zipped.append((points[i], points[i+1]))
 
-    return NoteGroup(map(lambda p: Arc(
-        p[0].time, p[1].time, p[0].x, p[1].x, easing, p[0].y, p[1].y, color, isskyline
-    ), zipped)
-    )
+        return NoteGroup(map(lambda p: Arc(
+            p[0].time, p[1].time, p[0].x, p[1].x, easing, p[0].y, p[1].y, color, isskyline
+        ), zipped)
+        )
+    elif mode == 'p':
+        zipped = zip(
+            arc_slice_by_count(arcs[0], count), arc_slice_by_count(arcs[1], count)
+        )
+        return NoteGroup(map(lambda p: Arc(
+            p[0].time, p[0].totime, p[0].fromx, p[1].tox, easing, p[0].fromy, p[1].toy, color, isskyline
+        ), zipped))
+    else:
+        raise AffNoteValueError(f"Excepting 'c' or 'p' for 'mode', not {mode}")
+
+
+def arc_straighten(arcs: NoteGroup, x: bool = False, y: bool = False, connector: bool = False) -> NoteGroup:
+    result = NoteGroup([])
+    if not (x or y or connector):
+        print('Warning: No option used, will return origin NoteGroup')
+        return arcs
+
+    for i in range(len(arcs)):
+        arc = arcs[i]
+        if not isinstance(arc, Arc):
+            raise AffNoteTypeError(f"Excepting 'Arc', not {type(arc).__name__}")
+
+        if x:
+            arc.tox = arc.fromx
+        if y:
+            arc.toy = arc.fromy
+        result.append(arc)
+
+        if connector and (i != len(arcs) - 1):
+            next_arc = arcs[i+1]
+            if isinstance(next_arc, Arc) and (next_arc.fromx != arc.tox or next_arc.fromy != arc.toy):
+                result.append(Arc(arc.totime, arc.totime, arc.tox, next_arc.fromx, 's', arc.toy, next_arc.fromy, arc.color, arc.isskyline))
+
+    return result
+
+
+def arc_interlace(arcs: NoteGroup):
+    result = NoteGroup([])
+    for i in range(0, len(arcs) - 1, 2):
+        if isinstance(arcs[i], Arc) and isinstance(arcs[i + 1], Arc):
+            arcs[i + 1].isskyline = not arcs[i + 1].isskyline
+        else: 
+            raise AffNoteTypeError(f"Excepting 'Arc', not {type(arcs[i]).__name__}")
+    return arcs

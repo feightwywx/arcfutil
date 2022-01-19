@@ -4,6 +4,9 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
+class AffNoteTypeError(Exception):
+    pass
+
 class AffNoteIndexError(Exception):
     pass
 
