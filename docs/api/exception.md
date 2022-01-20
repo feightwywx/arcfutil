@@ -11,6 +11,10 @@ language: zh-CN
 
 在索引非法时触发。
 
+## `AffNoteTypeError`
+
+在Note类型非法时被触发。
+
 ## `AffNoteValueError`
 
 在Note值非法时被触发。

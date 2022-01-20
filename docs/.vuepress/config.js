@@ -14,7 +14,7 @@ module.exports = {
         collapsable: false, // 可选的, 默认值是 true,
         sidebarDepth: 2,    // 可选的, 默认值是 1
         children: [
-          '/guide/', '/guide/install', '/guide/package-aff', '/guide/cli-tools'
+          '/guide/', '/guide/install', '/guide/package-aff', '/guide/cli-tools', '/guide/cv'
         ]
       },
       {
@@ -22,7 +22,7 @@ module.exports = {
         path: '/api/',
         sidebarDepth: 1,    // 可选的, 默认值是 1
         children: [
-          '/api/aff', '/api/aff-generator', '/api/aff-note', '/api/aff-note-easing', '/api/aff-note-validstrings', '/api/exception',
+          '/api/aff', '/api/aff-generator', '/api/aff-note', '/api/aff-note-easing', '/api/aff-note-validstrings', '/api/cv','/api/exception',
         ]
       }
     ],
@@ -31,8 +31,8 @@ module.exports = {
       { text: '快速上手', link: '/guide/' },
       { text: 'API', link: '/api/' },
       {
-        text: 'v0.6.4', items: [
-          { text: 'v0.6.4', link: '/' }
+        text: 'v0.7.0', items: [
+          { text: 'v0.7.0', link: '/' }
         ]
       },
       { text: 'AFF工具箱', link: 'https://aff.arcaea.icu/' }

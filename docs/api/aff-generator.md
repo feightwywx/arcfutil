@@ -79,6 +79,25 @@ aff片段生成函数。
 |arc1|Arc|主包络线，决定了新Arc的起点，缓动类型，颜色和虚实|
 |arc2|Arc|副包络线|
 |count|int|切分数量|
+|mode|Literal['c', 'p']|生成模式，c为折线，p为平行线|c|
+
+### 返回值
+
+`(NoteGroup)` 生成的Note。
+
+## `arc_interlace()`
+
+将一组Arc转换为虚实相间的Arc。
+
+### 原型
+
+`arcfutil.aff.generator.arc_sample.arc_interlace(...) -> NoteGroup`
+
+### 参数
+
+|参数名|类型|说明|默认值|
+|--|--|--|--|
+|arcs|NoteGroup|输入的Arc列表|
 
 ### 返回值
 
@@ -140,6 +159,27 @@ aff片段生成函数。
 |--|--|--|--|
 |arc|Arc|要切分的Arc|
 |timings|Iterable|作为切分基准的Timing组|
+
+### 返回值
+
+`(NoteGroup)` 生成的Note。
+
+## `arc_straighten()`
+
+拉直Arc。
+
+### 原型
+
+`arcfutil.aff.generator.arc_sample.arc_straighten(...) -> NoteGroup`
+
+### 参数
+
+|参数名|类型|说明|默认值|
+|--|--|--|--|
+|arcs|NoteGroup|输入的Arc列表|
+|x|bool|是否x方向拉直|false|
+|y|bool|是否y方向拉直|false|
+|connector|bool|是否建立连接符（0时长s蛇）|false|
 
 ### 返回值
 

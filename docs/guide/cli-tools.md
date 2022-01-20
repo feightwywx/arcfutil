@@ -1,7 +1,6 @@
 ---
 title: 命令行工具
 language: zh-CN
-next: false
 ---
 
 # 命令行工具
