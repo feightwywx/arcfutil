@@ -1,4 +1,5 @@
 import setuptools
+from setuptools import find_namespace_packages
 
 with open("README.md", "r", encoding='utf8') as fh:
     long_description = fh.read()
@@ -12,7 +13,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/feightwywx/arcfutil",
-    packages=setuptools.find_packages("src"),
+    packages=find_namespace_packages('src', include=['arcfutil.*']),
     package_dir={"": "src"},
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -22,9 +23,10 @@ setuptools.setup(
     python_requires='>=3.4',
     entry_points={"console_scripts": [
         "arcfutil = arcfutil.cli:main",
-        "songlist = arcfutil.songlist:main",
-        "sortassets = arcfutil.sortassets:main",
-        "arcadeclean = arcfutil.arcade_clean:main"
+        "songlist = arcfutil.cli.songlist:main",
+        "sortassets = arcfutil.cli.sortassets:main",
+        "arcadeclean = arcfutil.cli.arcade_clean:main"
         ]
-    }
+    },
+    zip_safe=False,
 )
