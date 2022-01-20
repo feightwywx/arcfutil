@@ -28,7 +28,8 @@ def sort(unsorted: NoteGroup):
             elif eachnote.type == 'Hold':
                 sortable_hold.append(eachnote)
             elif eachnote.type == 'Arc':
-                eachnote.skynote = sorted(eachnote.skynote)
+                if eachnote.skynote:
+                    eachnote.skynote = sorted(eachnote.skynote)
                 sortable_arc.append(eachnote)
             elif eachnote.type == 'Camera':
                 sortable_camera.append(eachnote)
