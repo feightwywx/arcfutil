@@ -7,6 +7,7 @@
 from math import sin
 from math import cos
 from math import pi
+from typing import Callable
 
 
 def linar(percent):
@@ -87,11 +88,14 @@ def slicer(time, fromtime, totime, fromposition, toposition, easingtype='s'):
     totime -= t_offset
     toposition -= p_offset
 
-    if easingtype == 's':
-        return toposition * linar(time / totime) + p_offset
-    elif easingtype == 'si':
-        return toposition * sine(time / totime) + p_offset
-    elif easingtype == 'so':
-        return toposition * cosine(time / totime) + p_offset
-    elif easingtype == 'b':
-        return toposition * bezier(time / totime) + p_offset
+    if isinstance(easingtype, str):
+        if easingtype == 's':
+            return toposition * linar(time / totime) + p_offset
+        elif easingtype == 'si':
+            return toposition * sine(time / totime) + p_offset
+        elif easingtype == 'so':
+            return toposition * cosine(time / totime) + p_offset
+        elif easingtype == 'b':
+            return toposition * bezier(time / totime) + p_offset
+    elif isinstance(easingtype, Callable):
+        return toposition * easingtype(time / totime) + p_offset

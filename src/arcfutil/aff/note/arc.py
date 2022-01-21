@@ -4,6 +4,7 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
+from typing import Union, List, Callable
 from .easing import slicer
 from .hold import Hold
 from .common_note import NoteGroup
@@ -13,14 +14,14 @@ from ...exception import *
 
 
 class Arc(Hold):
-    def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: str, fromy: float, toy: float,
+    def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: Union[str, Callable, List[Callable]], fromy: float, toy: float,
                  color: int, isskyline: bool, skynote: list = None, fx=None):
         super(Arc, self).__init__(time, totime, 1)
         self.fromx: float = fromx
         self.fromy: float = fromy
         self.tox: float = tox
         self.toy: float = toy
-        self.slideeasing: str = slideeasing
+        self.slideeasing: Union[str, Callable, List[Callable]] = slideeasing
         self.color: int = color
         self.isskyline: bool = isskyline
         self.skynote: list = skynote
@@ -48,25 +49,28 @@ class Arc(Hold):
             return slice_x, slice_y
 
     def __str__(self):
-        if self.slideeasing in validstrings.slideeasingexlist:
-            raise AffNoteValueError(
-                'value {} for attribute "slideeasing" is not allowed to output (only {} allowed)'.format(
-                    self.slideeasing, str(validstrings.slideeasinglist)
-                ))
-        arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
-                 '{isskyline})'.format(
-                  time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
-                  slideeasing=self.slideeasing, tox=self.tox, toy=self.toy, color=int(self.color),
-                  fx=self.fx if self.fx else 'none', isskyline='true' if self.isskyline else 'false'
-                  )
-        skynotestr = ''
-        if self.skynote is not None:
-            for i in range(len(self.skynote)):
-                eachtime = self.skynote[i]
-                skynotestr += 'arctap({time})'.format(time=int(eachtime))
-                if i != len(self.skynote) - 1:
-                    skynotestr += ','
-        return arcstr + ('[{0}]'.format(skynotestr) if skynotestr else '') + ';'
+        if isinstance(self.slideeasing, str):
+            if self.slideeasing in validstrings.slideeasingexlist:
+                raise AffNoteValueError(
+                    'value {} for attribute "slideeasing" is not allowed to output (only {} allowed)'.format(
+                        self.slideeasing, str(validstrings.slideeasinglist)
+                    ))
+            arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
+                    '{isskyline})'.format(
+                    time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
+                    slideeasing=self.slideeasing, tox=self.tox, toy=self.toy, color=int(self.color),
+                    fx=self.fx if self.fx else 'none', isskyline='true' if self.isskyline else 'false'
+                    )
+            skynotestr = ''
+            if self.skynote is not None:
+                for i in range(len(self.skynote)):
+                    eachtime = self.skynote[i]
+                    skynotestr += 'arctap({time})'.format(time=int(eachtime))
+                    if i != len(self.skynote) - 1:
+                        skynotestr += ','
+            return arcstr + ('[{0}]'.format(skynotestr) if skynotestr else '') + ';'
+        else:
+            raise AffNoteValueError(f"type {type(self.slideeasing).__name__} is not allowed to output (only str allowed)")
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
@@ -78,11 +82,30 @@ class Arc(Hold):
             if not 0 <= value <= 2:
                 raise AffNoteValueError('invalid value {} for attribute "color" (only accept 0~2)'.format(value))
         elif key == 'slideeasing':
-            exvalid = validstrings.slideeasinglist + validstrings.slideeasingexlist
-            if value not in exvalid:
-                raise AffNoteValueError('invalid value {} for attribute "slideeasing" (only accept {})'.format(
-                    value, str(validstrings.slideeasinglist)
-                ))
+            if isinstance(value, str):
+                exvalid = validstrings.slideeasinglist + validstrings.slideeasingexlist
+                if value not in exvalid:
+                    raise AffNoteValueError('invalid value {} for attribute "slideeasing" (only accept {})'.format(
+                        value, str(validstrings.slideeasinglist)
+                    ))
+            elif isinstance(value, List):
+                if len(value) != 2:
+                    raise AffNoteValueError(f"attribute 'easingtype' recieved {len(value)} callable(s) in one list (excepting 2)")
+                for each in value:
+                    if isinstance(each, str):
+                        valid = ['b', 's', 'si', 'so']
+                        if each not in valid:
+                            raise AffNoteValueError('invalid value {} for attribute "slideeasing" (only accept {})'.format(
+                                each, str(valid)
+                            ))
+                    elif isinstance(each, Callable):
+                        pass
+                    else:
+                        raise AffNoteValueError(f"invalid easing type {type(each)} for slideeasing (excepting str or callable)")
+            elif isinstance(value, Callable):
+                pass
+            else:
+                raise AffNoteValueError(f"invalid type '{type(value).__name__}' for attribute slideeasing (excepting str, Callable or List)")
         elif key == 'fx' and value is not None:
             if value not in validstrings.fxlist:
                 raise AffNoteValueError('invalid value {} for attribute "fx" (only accept {})'.format(
@@ -90,28 +113,40 @@ class Arc(Hold):
                 ))
 
     def __geteasingtype(self):
-        x_type = 's'
-        y_type = 's'
         se = self.slideeasing
+        if isinstance(se, str):
+            x_type = 's'
+            y_type = 's'
 
-        if len(se) < 3 and se not in ['bb', 'bs', 'sb', 'ss']:
+            if len(se) < 3 and se not in ['bb', 'bs', 'sb', 'ss']:
+                x_type = se
+                if se == 'b':
+                    y_type = 'b'
+            else:
+                if se.startswith('b'):
+                    x_type = 'b'
+                elif se.startswith('si'):
+                    x_type = 'si'
+                elif se.startswith('so'):
+                    x_type = 'so'
+
+                if se.endswith('b'):
+                    y_type = 'b'
+                elif se.endswith('si'):
+                    y_type = 'si'
+                elif se.endswith('so'):
+                    y_type = 'so'
+        elif isinstance(se, Callable):
             x_type = se
-            if se == 'b':
-                y_type = 'b'
+            y_type = se
+        elif isinstance(se, List):
+            if len(se) == 2:
+                x_type = se[0]
+                y_type = se[1]
+            else:
+                raise AffNoteValueError(f"attribute 'easingtype' recieved {len(se)} function(s) in one list (excepting 2)")
         else:
-            if se.startswith('b'):
-                x_type = 'b'
-            elif se.startswith('si'):
-                x_type = 'si'
-            elif se.startswith('so'):
-                x_type = 'so'
-
-            if se.endswith('b'):
-                y_type = 'b'
-            elif se.endswith('si'):
-                y_type = 'si'
-            elif se.endswith('so'):
-                y_type = 'so'
+            raise AffNoteValueError(f"attribute 'slideeasing' recieved a {type(self.slideeasing).__name__} (excepting str, Callable or List[Callable])")
         return x_type, y_type
 
     def __getslicepositionpara(self, slicetimepara, easingtype):
