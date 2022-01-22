@@ -147,7 +147,7 @@ Note容器内所有Note的Note语句形式字符串。如果`desnity`属性为`1
 |fromy|float|起始点y坐标|
 |tox|float|终点x坐标|
 |toy|float|终点y坐标|
-|slideeasing|str|缓动类型，支持`s|b|si|so`两两组合|
+|slideeasing|str,Callable, List[Callable]|缓动类型，支持`s|b|si|so`两两组合/缓动函数/两个缓动函数组成的列表|
 |color|int|`0`~`2`，分别为蓝，红，绿|
 |isskyline|bool|是否为黑线|
 |skynote|list|天键时间点列表|`None`|

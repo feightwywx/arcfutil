@@ -1,9 +1,9 @@
 ---
-title: arcfutil.aff.note.easing
+title: arcfutil.aff.easing
 language: zh-CN
 ---
 
-# `arcfutil.aff.note.easing`
+# `arcfutil.aff.easing`
 
 ## `bezier()`
 
@@ -53,7 +53,22 @@ language: zh-CN
 
 变换后的进度。
 
-## `linar()`
+## `get_easing_func()`
+
+给定一个字符串，返回对应的缓动函数。
+
+### 参数
+
+|参数名|类型|说明|默认值|
+|--|--|--|--|
+|type|str|变换类型，支持`s|si|so|b`|
+|b_point|list|贝塞尔曲线控制点，参数`type`为`b`时生效|[1/3, 0, 2/3, 1]|
+
+### 返回值
+
+`(Callable)`返回的缓动函数。
+
+## `linear()`
 
 将百分比形式的变换进度映射到直线。这个函数会返回原值。
 
@@ -80,7 +95,7 @@ language: zh-CN
 |totime||曲线终止时间点|
 |fromposition||曲线起始位置|
 |toposition||曲线终止位置|
-|easingtype||缓动类型，支持`s|si|so|b`|s|
+|easingtype||缓动类型，支持`s|si|so|b`/缓动函数|s|
 
 ### 返回值
 
@@ -99,3 +114,7 @@ language: zh-CN
 ### 返回值
 
 变换后的进度。
+
+# `arcfutil.aff.easing.cheatsheet`
+
+预置缓动函数，提供t[0,1]->x[0,1]的映射，详见[easings.net](https://easings.net/)。

@@ -12,7 +12,7 @@ from ..note import SceneControl
 from ..note import Timing
 from random import randint
 from ...exception import AffNoteTypeError, AffNoteValueError
-from ..easing import get_ease, linar
+from ..easing import get_ease, linear
 from copy import deepcopy
 
 
@@ -166,14 +166,14 @@ def arc_animation_assist(
     delta_x: float,
     delta_y: float,
     basebpm: float,
-    easing_x: Callable = linar,
-    easing_y: Callable = linar,
+    easing_x: Callable = linear,
+    easing_y: Callable = linear,
     infbpm: float = 999999,
     framerate: float = 60,
     fake_note_t: int = 100000,
     offset_t: int = 0,
     delta_offset_t = 0,
-    easing_offset_t: Callable = linar
+    easing_offset_t: Callable = linear
 ) -> NoteGroup:
     delta_t = 1000 / framerate
     count = int((stop_t - start_t) / delta_t)

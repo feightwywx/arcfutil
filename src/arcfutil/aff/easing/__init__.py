@@ -10,7 +10,7 @@ from math import pi
 from typing import Callable
 
 
-def linar(percent):
+def linear(percent):
     return percent
 
 
@@ -82,7 +82,7 @@ def get_ease(percent: float, type: str, b_point: list = [1/3, 0, 2/3, 1]) -> flo
 
 def get_easing_func(type: str, b_point: list = [1/3, 0, 2/3, 1]) -> Callable:
     if type == 's':
-        return linar
+        return linear
     elif type == 'si':
         return sine
     elif type == 'so':
@@ -107,7 +107,7 @@ def slicer(time, fromtime, totime, fromposition, toposition, easingtype='s'):
 
     if isinstance(easingtype, str):
         if easingtype == 's':
-            return toposition * linar(time / totime) + p_offset
+            return toposition * linear(time / totime) + p_offset
         elif easingtype == 'si':
             return toposition * sine(time / totime) + p_offset
         elif easingtype == 'so':

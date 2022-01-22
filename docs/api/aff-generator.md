@@ -25,17 +25,15 @@ aff片段生成函数。
 |delta_x|float|x轴位移量|
 |delta_y|float|y轴位移量|
 |basebpm|float|基准BPM|
-|easing_x|str|x轴位移缓动，可选`b|s|si|so`|s|
-|easing_b_point_x|list|x轴贝塞尔缓动曲线，easing_x的值为`b`时生效|[1/3, 0, 2/3, 1]|
-|easing_y|str|y轴位移缓动，可选`b|s|si|so`|s|
-|easing_b_point_y|list|y轴贝塞尔缓动曲线，easing_y的值为`b`时生效|[1/3, 0, 2/3, 1]|
+|easing_x|Callable|x轴缓动函数|`aff.easing.linear`|
+|easing_y|Callable|y轴缓动函数|`aff.easing.linear`|
 |infbpm|float|极大值BPM|999999|
 |framerate|float|帧率|60|
 |fake_note_t|float|100000|假Note时间偏移量|
 |offset_t|int|动画整体时间偏移，影响物件z轴距离|0|
 |delta_offset_t||动画整体时间偏移变化量，可产生z轴位移|0|
-|easing_offset_t|str|z轴位移缓动，可选`b|s|si|so`|s|
-|easing_b_point_offset_t|list|z轴贝塞尔缓动曲线，easing_offset_t的值为`b`时生效|[1/3, 0, 2/3, 1]|
+|easing_offset_t|str|z轴缓动函数|`aff.easing.linear`|
+
 
 ### 返回值
 
@@ -203,8 +201,32 @@ aff片段生成函数。
 |dest_bpm|float|目标BPM|
 |count|int|Timing数量|
 |bar|float|小节线数值|4.00|
-|mode||缓动模式，可选`b|s|si|so`|s|
+|mode|Literal['s', 'b', 'si', 'so'], Callable|缓动模式，可选`b|s|si|so`或传入函数|s|
 |b_point|list|贝塞尔缓动曲线，mode的值为`b`时生效|[1/3, 0, 2/3, 1]|
+
+### 返回值
+
+`(NoteGroup)` 生成的Note。
+
+## `timing_easing_by_disp()`
+
+生成平缓变化的Timing。基于持续时间和缓动函数，位移可控。
+
+### 原型
+
+`arcfutil.aff.generator.timing_sample.timing_easing_by_disp(...) -> NoteGroup`
+
+### 参数
+
+|参数名|类型|说明|默认值|
+|--|--|--|--|
+|start_t|int|效果起始时间|
+|stop_t|int|效果结束时间|
+|base|float|起始BPM|
+|count|int|Timing数量|
+|easing|Callable|缓动函数|s|
+|bar|float|小节线数值|4.00|
+
 
 ### 返回值
 
