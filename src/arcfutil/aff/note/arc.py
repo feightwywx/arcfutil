@@ -79,8 +79,8 @@ class Arc(Hold):
                 value[each[0]] = int(each[1])
             self.__dict__[key] = sorted(value)
         elif key == 'color':
-            if not 0 <= value <= 2:
-                raise AffNoteValueError('invalid value {} for attribute "color" (only accept 0~2)'.format(value))
+            if not 0 <= value <= 3:
+                raise AffNoteValueError('invalid value {} for attribute "color" (only accept 0~3)'.format(value))
         elif key == 'slideeasing':
             if isinstance(value, str):
                 exvalid = validstrings.slideeasinglist + validstrings.slideeasingexlist
