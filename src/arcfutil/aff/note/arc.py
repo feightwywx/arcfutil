@@ -5,7 +5,7 @@
 # Licensed under the MIT License.
 
 from typing import Union, List, Callable
-from .easing import slicer
+from ..easing import slicer
 from .hold import Hold
 from .common_note import NoteGroup
 from .common_note import time_align

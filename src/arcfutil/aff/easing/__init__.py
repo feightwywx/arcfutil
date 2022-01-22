@@ -80,6 +80,23 @@ def get_ease(percent: float, type: str, b_point: list = [1/3, 0, 2/3, 1]) -> flo
         return bezier(percent, b_point[0], b_point[1], b_point[2], b_point[3])
 
 
+def get_easing_func(type: str, b_point: list = [1/3, 0, 2/3, 1]) -> Callable:
+    if type == 's':
+        return linar
+    elif type == 'si':
+        return sine
+    elif type == 'so':
+        return cosine
+    elif type == 'b':
+        return make_bezier(b_point)
+
+
+def make_bezier(b_point: list = [1/3, 0, 2/3, 1]):
+    def custom_bezier(x: float) -> float:
+        return bezier(x, b_point[0], b_point[1], b_point[2], b_point[3])
+    return custom_bezier
+
+
 # @__checker
 def slicer(time, fromtime, totime, fromposition, toposition, easingtype='s'):
     t_offset = fromtime
