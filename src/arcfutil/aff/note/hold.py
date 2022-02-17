@@ -75,4 +75,6 @@ class Hold(Tap):
     def align(self, bpm: float, error: int = 3, lcd = 96):
         super(Hold, self).align(bpm, error, lcd)
         self.totime = time_align(self.totime, bpm, error, lcd)
+        if self.time == self.totime:
+            self.totime += 1
         return self
