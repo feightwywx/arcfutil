@@ -72,9 +72,9 @@ class Hold(Tap):
         self.totime += value
         return self
         
-    def align(self, bpm: float, error: int = 3, lcd = 96):
-        super(Hold, self).align(bpm, error, lcd)
-        self.totime = time_align(self.totime, bpm, error, lcd)
+    def align(self, bpm: float, error: int = 3, lcm = 96):
+        super(Hold, self).align(bpm, error, lcm)
+        self.totime = time_align(self.totime, bpm, error, lcm)
         if self.time == self.totime:
             self.totime += 1
         return self

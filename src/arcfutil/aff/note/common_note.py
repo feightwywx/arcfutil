@@ -8,8 +8,8 @@ from copy import deepcopy
 from typing import Iterable
 
 
-def time_align(time: int, bpm: float, error: int = 3, lcd = 96):
-    fpb = 60000 * 4 / bpm / lcd
+def time_align(time: int, bpm: float, error: int = 3, lcm = 96):
+    fpb = 60000 * 4 / bpm / lcm
     alignedTime = 0
     atime1 = round(time//fpb*fpb) #向下取grid时间戳
     atime2 = round((time//fpb+1)*fpb) #向上取grid时间戳
@@ -55,8 +55,8 @@ class Note:
         self.time += value
         return self
         
-    def align(self, bpm: float, error: int = 3, lcd = 96):
-        self.time = time_align(self.time, bpm, error, lcd)
+    def align(self, bpm: float, error: int = 3, lcm = 96):
+        self.time = time_align(self.time, bpm, error, lcm)
         return self
         
 
@@ -102,8 +102,8 @@ class NoteGroup(list):
                 each.mirror()
         return self
 
-    def align(self, bpm: float, error: int = 3, lcd = 96):
+    def align(self, bpm: float, error: int = 3, lcm = 96):
         for each in self:
             if each is not None:
-                each.align(bpm, error, lcd)
+                each.align(bpm, error, lcm)
         return self
