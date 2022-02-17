@@ -188,11 +188,11 @@ class Arc(Hold):
                 self.skynote[each[0]] += value
         return self
         
-    def align(self, bpm: float, error: int = 3, lcd = 96):
-        super(Arc, self).align(bpm, error, lcd)
+    def align(self, bpm: float, error: int = 3, lcm = 96):
+        super(Arc, self).align(bpm, error, lcm)
         if self.skynote:
             for each in enumerate(self.skynote):
-                self.skynote[each[0]] = time_align(self.skynote[each[0]], bpm, error, lcd)
+                self.skynote[each[0]] = time_align(self.skynote[each[0]], bpm, error, lcm)
         return self
     
     def transfer(self, x_value: float, y_value: float):
