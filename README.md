@@ -53,10 +53,6 @@ pip install -U arcfutil
 
 ## 感谢
 
-本项目使用了以下项目的开源代码。
+- 预置缓动曲线实现来自[easings.net](https://easings.net/)。
 
-- [easings.net](https://easings.net/)
-
-- [WebKit](https://webkit.org/)
-
-
+- 贝塞尔曲线实现来自[WebKit](https://webkit.org/)。
