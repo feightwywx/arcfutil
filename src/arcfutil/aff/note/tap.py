@@ -18,9 +18,10 @@ class Tap(Note):
 
     def __setattr__(self, key, value):
         super(Tap, self).__setattr__(key, value)
-        if key == 'lane':
-            if not 0 < value < 5:
-                raise AffNoteValueError('invalid value {} for attribute "lane" (only accept 1~4)'.format(value))
+#         移除了轨道号判定
+#         if key == 'lane':
+#             if not 0 < value < 5:
+#                 raise AffNoteValueError('invalid value {} for attribute "lane" (only accept 1~4)'.format(value))
 
     def mirror(self):
         self.lane = 5 - self.lane  # Simple magic number
