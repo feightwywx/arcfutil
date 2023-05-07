@@ -6,13 +6,16 @@
 
 from copy import deepcopy
 from typing import Iterable
-
+import math
 
 def time_align(time: int, bpm: float, error: int = 3, lcm = 96):
     fpb = 60000 * 4 / bpm / lcm
     alignedTime = 0
-    atime1 = round(time//fpb*fpb) #向下取grid时间戳
-    atime2 = round((time//fpb+1)*fpb) #向上取grid时间戳
+    # atime1 = round(time//fpb*fpb) #向下取grid时间戳
+    # atime2 = round((time//fpb+1)*fpb) #向上取grid时间戳
+    # 因为 sb616 在游戏本体里用的好像是向下取整，所以这里用 floor 好了
+    atime1 = math.floor(time//fpb*fpb) #向下取grid时间戳
+    atime2 = math.floor((time//fpb+1)*fpb) #向上取grid时间戳
     abs1 = abs(time - atime1) #atime1与time的距离
     abs2 = abs(time - atime2)
     ok1 = (abs1 <= error) #abs1是否在容差内

@@ -190,6 +190,11 @@ class Arc(Hold):
         
     def align(self, bpm: float, error: int = 3, lcm = 96):
         super(Arc, self).align(bpm, error, lcm)
+        # 防止单天键出 bug
+        if self.time == self.totime:
+            if self.skynote:
+                self.totime += 1
+        
         if self.skynote:
             for each in enumerate(self.skynote):
                 self.skynote[each[0]] = time_align(self.skynote[each[0]], bpm, error, lcm)
