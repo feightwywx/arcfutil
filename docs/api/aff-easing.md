@@ -46,7 +46,7 @@ language: zh-CN
 |参数名|类型|说明|默认值|
 |--|--|--|--|
 |percent|float|百分比进度（小数形式）|
-|type|str|变换类型，支持`s|si|so|b`|
+|type|str|变换类型，支持`s|si|so|b`以及easings.net中的easing，例如`ease_in_sine`|
 |b_point|list|贝塞尔曲线控制点，参数`type`为`b`时生效|[1/3, 0, 2/3, 1]|
 
 ### 返回值
@@ -61,7 +61,7 @@ language: zh-CN
 
 |参数名|类型|说明|默认值|
 |--|--|--|--|
-|type|str|变换类型，支持`s|si|so|b`|
+|type|str|变换类型，支持`s|si|so|b`以及easings.net中的easing，例如`ease_in_sine`|
 |b_point|list|贝塞尔曲线控制点，参数`type`为`b`时生效|[1/3, 0, 2/3, 1]|
 
 ### 返回值

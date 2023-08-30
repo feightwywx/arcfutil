@@ -530,7 +530,7 @@ Note对象的深拷贝。
 |--|--|--|--|
 |time|int|Note时间点|
 |totime|int|Note结束时间点|
-|lane|int|Note轨道，范围`0`~`3`|
+|lane|float|Note轨道|
 
 ### 方法
 
@@ -950,7 +950,7 @@ Note对象的深拷贝。
 |参数名|类型|说明|默认值|
 |--|--|--|--|
 |time|int|Note时间点|
-|lane|int|Note轨道，范围`0`~`3`|
+|lane|float|Note轨道|
 
 ### 方法
 

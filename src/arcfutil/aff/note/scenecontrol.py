@@ -8,7 +8,7 @@ from .common_note import Note
 from . import validstrings
 from ...exception import *
 
-
+# TODO 自定义scenecontrol支持
 class SceneControl(Note):
     def __init__(self, time: int, scenetype: str, x: float = 0, y: int = 0):
         super(SceneControl, self).__init__(time)

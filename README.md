@@ -22,7 +22,7 @@ pip install -U arcfutil
 
   - 支持切片等特性。Python式地创作谱面吧！
 
-  - 支持Arcaea谱面的各种元素！（截至2021年愚人节版本v3.5.3）
+  - 支持Arcaea谱面的各种元素！
   
   - `timinggroup`支持
   

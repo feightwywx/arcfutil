@@ -19,7 +19,7 @@ aff片段生成函数。
 
 |参数名|类型|说明|默认值|
 |--|--|--|--|
-|arc|Arc|要变换的Arc|
+|arc|Arc、Tap、Hold|要变换的物件|
 |start_t|int|动画开始时间点|
 |stop_t|int|动画结束时间点|
 |delta_x|float|x轴位移量|
