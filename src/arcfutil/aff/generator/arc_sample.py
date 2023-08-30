@@ -4,12 +4,14 @@
 # (c)2021 .direwolf <kururinmiracle@outlook.com>
 # Licensed under the MIT License.
 
-from typing import Callable, Iterable, List, Literal
+from typing import Callable, Iterable, List, Literal, Union
 from arcfutil.aff.note.notegroup import TimingGroup
 from ..note import Arc
 from ..note import NoteGroup
 from ..note import SceneControl
 from ..note import Timing
+from ..note import Tap
+from ..note import Hold
 from random import randint
 from ...exception import AffNoteTypeError, AffNoteValueError
 from ..easing import get_ease, linear
@@ -160,7 +162,7 @@ def arc_slice_by_timing(arc: Arc, timings: Iterable):
 
 
 def arc_animation_assist(
-    arc: Arc,
+    arc: Union[Arc, Tap, Hold],
     start_t: int,
     stop_t: int,
     delta_x: float,
@@ -200,11 +202,17 @@ def arc_animation_assist(
         frame.append(Timing(actual_offset_t, infbpm))
         frame.append(Timing(actual_offset_t + 1, basebpm))
         temp_arc = deepcopy(arc)
-        temp_arc = temp_arc.offsetto(fake_note_t + 1)
-        temp_arc.fromx += delta_x * easing_x(i / count)
-        temp_arc.tox += delta_x * easing_x(i / count)
-        temp_arc.fromy += delta_y * easing_y(i / count)
-        temp_arc.toy += delta_y * easing_y(i / count)
+        if (isinstance(arc, Arc)):
+            temp_arc = temp_arc.offsetto(fake_note_t + 1)
+            temp_arc.fromx += delta_x * easing_x(i / count)
+            temp_arc.tox += delta_x * easing_x(i / count)
+            temp_arc.fromy += delta_y * easing_y(i / count)
+            temp_arc.toy += delta_y * easing_y(i / count)
+            
+        elif (isinstance(arc, Tap) or isinstance(arc, Hold)):
+            temp_arc = temp_arc.offsetto(fake_note_t + 1)
+            temp_arc.lane += delta_x * easing_x(i / count)
+        
         frame.append(temp_arc)
 
         destgroup.append(frame)
