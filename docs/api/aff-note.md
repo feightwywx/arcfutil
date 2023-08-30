@@ -151,7 +151,7 @@ Note容器内所有Note的Note语句形式字符串。如果`desnity`属性为`1
 |color|int|`0`~`3`，分别为蓝，红，绿，未知|
 |isskyline|bool|是否为黑线|
 |skynote|list|天键时间点列表|`None`|
-|fx|str|FX，支持值见`note.validstrings.fxlist`|`None`|
+|fx|str|FX，可用于天键打击音|`None`|
 
 
 ### 方法

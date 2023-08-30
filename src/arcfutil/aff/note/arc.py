@@ -106,11 +106,11 @@ class Arc(Hold):
                 pass
             else:
                 raise AffNoteValueError(f"invalid type '{type(value).__name__}' for attribute slideeasing (excepting str, Callable or List)")
-        elif key == 'fx' and value is not None:
-            if value not in validstrings.fxlist:
-                raise AffNoteValueError('invalid value {} for attribute "fx" (only accept {})'.format(
-                    value, str(validstrings.fxlist)
-                ))
+        # elif key == 'fx' and value is not None:
+        #     if value not in validstrings.fxlist:
+        #         raise AffNoteValueError('invalid value {} for attribute "fx" (only accept {})'.format(
+        #             value, str(validstrings.fxlist)
+        #         ))
 
     def __geteasingtype(self):
         se = self.slideeasing
