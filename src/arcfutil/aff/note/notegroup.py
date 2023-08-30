@@ -53,7 +53,7 @@ class TimingGroup(NoteGroup):
     def __str__(self):
         group = 'timinggroup({0}){{'.format(str(self.option) if self.option is not None else '')
         for each in self:
-            group += '\n{0}'.format(each)
+            group += '\n  {0}'.format(each)
         group += '\n};'
         return group
 
