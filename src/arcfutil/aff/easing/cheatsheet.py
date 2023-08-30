@@ -1,6 +1,9 @@
+# Author: .direwolf <kururinmiracle@outlook.com>
+# Licensed under the MIT License.
+
 from math import sin, pi
 
-from . import make_bezier
+from .bezier import make_bezier
 
 ease_in_sine = make_bezier((0.12, 0, 0.39, 0))
 ease_out_sine = make_bezier((0.61, 1, 0.88, 1))
