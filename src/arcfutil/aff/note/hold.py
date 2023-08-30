@@ -10,7 +10,7 @@ from ...exception import *
 
 
 class Hold(Tap):
-    def __init__(self, time: int, totime: int, lane: int):
+    def __init__(self, time: int, totime: int, lane: float):
         super(Hold, self).__init__(time, lane)
         self.totime = totime
 
@@ -26,8 +26,12 @@ class Hold(Tap):
         return self.totime - self.time
 
     def __str__(self):
-        return 'hold({time},{totime},{lane});'.format(
-            time=int(self.time), totime=int(self.totime), lane=int(self.lane))
+        if (abs(int(self.lane) - self.lane) < 1e-3):
+            return 'hold({time},{totime},{lane});'.format(
+                time=int(self.time), totime=int(self.totime), lane=int(self.lane))
+        else:
+            return 'hold({time},{totime},{lane:.2f});'.format(
+                time=int(self.time), totime=int(self.totime), lane=self.lane)
 
     def __iter__(self):  # 防止意外迭代之后进入死循环
         pass

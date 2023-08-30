@@ -60,13 +60,13 @@ def loadline(notestr: str):
     if keyword == '' and paralist is not None:
         return note.Tap(
             time=int(paralist[0]),
-            lane=int(paralist[1])
+            lane=float(paralist[1])
         )
     elif keyword == 'hold':
         return note.Hold(
             time=int(paralist[0]),
             totime=int(paralist[1]),
-            lane=int(paralist[2])
+            lane=float(paralist[2])
         )
     elif keyword == 'arc':
         if paralist[9] == 'true':  # 是否为黑线

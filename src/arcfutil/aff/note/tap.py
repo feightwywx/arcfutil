@@ -9,12 +9,15 @@ from ...exception import *
 
 
 class Tap(Note):
-    def __init__(self, time: int, lane: int):
+    def __init__(self, time: int, lane: float):
         super(Tap, self).__init__(time)
-        self.lane: int = lane
+        self.lane: float = lane
 
     def __str__(self):
-        return '({time},{lane});'.format(time=int(self.time), lane=int(self.lane))
+        if (abs(int(self.lane) - self.lane) < 1e-3):
+            return '({time},{lane});'.format(time=int(self.time), lane=int(self.lane))
+        else:
+            return '({time},{lane:.2f});'.format(time=int(self.time), lane=self.lane)
 
     def __setattr__(self, key, value):
         super(Tap, self).__setattr__(key, value)
