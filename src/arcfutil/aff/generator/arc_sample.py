@@ -64,20 +64,46 @@ def arc_crease_line(
     return arclist
 
 
-def arc_rain(original_t: int, dest_t: int, step: float, length: float = None):
+def arc_rain(original_t: int, dest_t: int, step: float, length: Union[float, None] = None, mode: Literal['s', 'e', 'eb']='s',
+             x_limit: Union[List[float], None] = None, y_limit: Union[List[float], None] = None):
+    # 考虑生成边界的左下角是坐标原点，之后再偏移
+    # 怎么会有人用这种办法生成范围内随机数，可拓展性也太差了吧...被几年前的自己气死.jpg
+    x_offset = 0
+    # 如果给定了x_limit，则说明不需要预置的x偏移量
+    if x_limit is None:
+        if mode == 'e' or mode == 'eb':
+            x_offset = 100
+        else:
+            x_offset = 50
+
+    # 这位更是
     def max_x(y: int) -> int:
-        return int(-0.5 * y + 200)
+        if mode == 'e':
+            # 右上顶点(1.25+1,1.61)
+            return int(-(75/161) * y + 300)
+        elif mode == 'eb':
+            # 右上顶点(1.63+1,1.61)
+            return int(-(27/161) * y + 300)
+        else:
+            return int(-0.5 * y + 200)
 
     def min_x(y: int) -> int:
-        return int(0.5 * y)
+        if mode == 'e':
+            # 左上顶点(-0.25+1,1.61)
+            return int(75/161 * y)
+        elif mode == 'eb':
+            # 左上顶点(-0.63+1,1.61)
+            return int(27/161 * y)
+        else:
+            return int(0.5 * y)
 
     destgroup = NoteGroup()
     if length is None:
         length = step
     current_time = original_t
-    while current_time <= dest_t:
-        rand_y = randint(0, 100)
-        rand_x = randint(min_x(rand_y), max_x(rand_y))
+    while current_time < dest_t:
+        rand_y = randint(0, 100 if mode == 's' else 161) if y_limit is None else randint(int(y_limit[0] * 100), int(y_limit[1] * 100))
+        rand_x = randint(min_x(rand_y), max_x(rand_y)) if x_limit is None else randint(int(x_limit[0] * 100), int(x_limit[1] * 100))
         if dest_t - current_time <= length:  # 如果时间不足就截断
             actual_dest_t = dest_t
         else:
@@ -85,8 +111,8 @@ def arc_rain(original_t: int, dest_t: int, step: float, length: float = None):
         destgroup.append(Arc(
             current_time,
             actual_dest_t,
-            (rand_x - 50) / 100,
-            (rand_x - 50) / 100,
+            (rand_x - x_offset) / 100,
+            (rand_x - x_offset) / 100,
             's',
             rand_y / 100,
             rand_y / 100,

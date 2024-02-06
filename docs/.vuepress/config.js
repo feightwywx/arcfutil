@@ -31,8 +31,8 @@ module.exports = {
       { text: '快速上手', link: '/guide/' },
       { text: 'API', link: '/api/' },
       {
-        text: 'v0.10', items: [
-          { text: 'v0.10', link: '/' }
+        text: 'v0.11', items: [
+          { text: 'v0.11', link: '/' }
         ]
       },
       { text: 'AFF工具箱', link: 'https://aff.arcaea.icu/' }

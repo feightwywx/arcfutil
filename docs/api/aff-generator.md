@@ -113,10 +113,13 @@ aff片段生成函数。
 
 |参数名|类型|说明|默认值|
 |--|--|--|--|
-|original_t|int|下雨起始时间|
-|dest_t|int|下雨结束时间|
-|step|float|雨点起始点之间的间隔|
+|original_t|int|下雨起始时间||
+|dest_t|int|下雨结束时间||
+|step|float|雨点起始点之间的间隔||
 |length|float|雨点的长度，`None`则表示充满间隔|None|
+|mode|Literal['s', 'e', 'eb']|梯形限制的范围，'s'为标准，'e'为enwiden，'eb'为enwiden(byd)|s|
+|x_limit|Union[List[float], None]|x坐标的范围，将会覆盖梯形的左右边限制|None|
+|y_limit|Union[List[float], None]|y坐标的范围，将会覆盖梯形的上下边限制|None|
 
 ### 返回值
 
