@@ -173,6 +173,10 @@ class Arc(Hold):
         # more magic number))
         self.fromx = 1 - self.fromx
         self.tox = 1 - self.tox
+        if self.color == 0:
+            self.color = 1
+        elif self.color == 1:
+            self.color = 0
         return self
 
     def vmirror(self):
