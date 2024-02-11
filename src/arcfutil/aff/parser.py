@@ -118,15 +118,13 @@ def loadline(notestr: str):
                 time=int(paralist[0]),
                 scenetype=scenetype
             )
-        elif scenetype in ['redline', 'arcahvdistort', 'arcahvdebris', 'hidegroup']:
+        else:
             return note.SceneControl(
                 time=int(paralist[0]),
                 scenetype=scenetype,
                 x=float(paralist[2]),
                 y=int(paralist[3])
             )
-        else:
-            raise AffSceneTypeError
     elif keyword == 'flick':
         return note.Flick(
             time=int(paralist[0]),

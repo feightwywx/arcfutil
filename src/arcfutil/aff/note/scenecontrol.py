@@ -19,16 +19,17 @@ class SceneControl(Note):
     def __str__(self):
         if self.scenetype in ['trackshow', 'trackhide']:
             return 'scenecontrol({0},{1});'.format(self.time, self.scenetype)
-        elif self.scenetype in ['redline', 'arcahvdistort', 'arcahvdebris', 'hidegroup']:
+        else:
             return 'scenecontrol({0},{1},{2:.2f},{3});'.format(
                 int(self.time), self.scenetype, self.x, int(self.y))
-        else:
-            raise AffSceneTypeError('{0} is not a valid scene type'.format(self.scenetype))
+        # else:
+        #     raise AffSceneTypeError('{0} is not a valid scene type'.format(self.scenetype))
 
     def __setattr__(self, key, value):
         super(SceneControl, self).__setattr__(key, value)
         if key == 'scenetype':
-            if value not in validstrings.scenetypelist:
-                raise AffNoteValueError('invalid value {} for attribute "scenetype" (only accept {})'.format(
-                    value, str(validstrings.scenetypelist)
-                ))
+            pass
+            # if value not in validstrings.scenetypelist:
+            #     raise AffNoteValueError('invalid value {} for attribute "scenetype" (only accept {})'.format(
+            #         value, str(validstrings.scenetypelist)
+            #     ))
