@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 # Author: .direwolf <kururinmiracle@outlook.com>
+# Adding support for 4.aff and video by tenshi0xx <https://github.com/tenshi0xx>
 # Licensed under the MIT License.
 
 import os
@@ -31,15 +32,27 @@ def dl(path, destpath=None):
             try:
                 shutil.copyfile(oggpath, os.path.join(songpath, 'base.ogg'))
             except FileNotFoundError:
-                print(songpath, 'may a file. Delete it and try again.')
+                print(songpath, 'may be a file. Delete it and try again.')
                 continue
-            for i in range(4):
+            for i in range(5):  # Support for 4.aff
                 try:
                     affname = '{0}_{1}'.format(each, i)
                     shutil.copyfile(os.path.join(path, affname), os.path.join(songpath, '{0}.aff'.format(i)))
                 except FileNotFoundError:
-                    if i != 3:
+                    if i != 4:
                         print('{1}.aff for song {0} does not exist.'.format(each, i))
+            # Copy and rename additional video files
+            video_files = {
+                'video_1080.mp4': f'{each}_video_1080.mp4',
+                'video_720.mp4': f'{each}_video_720.mp4',
+                'video_audio.ogg': f'{each}_video_audio.ogg',
+                'video.mp4': f'{each}_video.mp4'
+            }
+            for new_name, old_name in video_files.items():
+                try:
+                    shutil.copyfile(os.path.join(path, old_name), os.path.join(songpath, new_name))
+                except FileNotFoundError:
+                    print(f'{old_name} for song {each} does not exist.')
             songcount += 1
     print('Processed', str(songcount), 'song(s) in dl folder.')
     print('Output path:', str(dest))
