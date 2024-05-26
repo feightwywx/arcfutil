@@ -39,7 +39,7 @@ def dl(path, destpath=None):
                     affname = '{0}_{1}'.format(each, i)
                     shutil.copyfile(os.path.join(path, affname), os.path.join(songpath, '{0}.aff'.format(i)))
                 except FileNotFoundError:
-                    if i != 4:
+                    if i < 3:
                         print('{1}.aff for song {0} does not exist.'.format(each, i))
             # Copy and rename additional video files
             video_files = {
@@ -52,7 +52,8 @@ def dl(path, destpath=None):
                 try:
                     shutil.copyfile(os.path.join(path, old_name), os.path.join(songpath, new_name))
                 except FileNotFoundError:
-                    print(f'{old_name} for song {each} does not exist.')
+                    # print(f'{old_name} for song {each} does not exist.')
+                    pass
             songcount += 1
     print('Processed', str(songcount), 'song(s) in dl folder.')
     print('Output path:', str(dest))
