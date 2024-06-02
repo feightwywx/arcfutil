@@ -6,7 +6,7 @@ with open("README.md", "r", encoding='utf8') as fh:
 
 setuptools.setup(
     name="arcfutil",
-    version="0.11.1",
+    version="0.12.0",
     author=".direwolf",
     author_email="kururinmiracle@outlook.com",
     description="A Python module designed for processing Arcaea related files(.aff chart, songlist, etc.)",
