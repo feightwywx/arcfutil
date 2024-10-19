@@ -66,6 +66,13 @@ def arc_crease_line(
 
 def arc_rain(original_t: int, dest_t: int, step: float, length: Union[float, None] = None, mode: Literal['s', 'e', 'eb']='s',
              x_limit: Union[List[float], None] = None, y_limit: Union[List[float], None] = None):
+    # 防止坐标写反报错
+    # https://github.com/feightwywx/arcfutil/issues/26
+    if x_limit is not None:
+        x_limit.sort()
+    if y_limit is not None:
+        y_limit.sort()
+    
     # 考虑生成边界的左下角是坐标原点，之后再偏移
     # 怎么会有人用这种办法生成范围内随机数，可拓展性也太差了吧...被几年前的自己气死.jpg
     x_offset = 0
