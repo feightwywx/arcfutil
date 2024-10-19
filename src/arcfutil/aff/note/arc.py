@@ -38,7 +38,23 @@ class Arc(Hold):
                 slicepara.append(slicetimepara[0][i] + slicepositionpara[i])
 
             notelist = [
-                Arc(time, totime, fromx, tox, 's', fromy, toy, self.color, self.isskyline)
+                Arc(
+                    time,
+                    totime,
+                    fromx,
+                    tox,
+                    's',
+                    fromy,
+                    toy,
+                    self.color,
+                    self.isskyline,
+                    None
+                    if (self.skynote is None)
+                    else list(filter(
+                        lambda t: time <= t <= totime,
+                        self.skynote
+                    ))
+                    )
                 for time, totime, fromx, tox, fromy, toy in slicepara
             ]
             notelist = NoteGroup(notelist)
