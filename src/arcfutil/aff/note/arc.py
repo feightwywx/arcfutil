@@ -71,11 +71,18 @@ class Arc(Hold):
                     'value {} for attribute "slideeasing" is not allowed to output (only {} allowed)'.format(
                         self.slideeasing, str(validstrings.slideeasinglist)
                     ))
+            def convert_isskyline(val):
+                if val == True:
+                    return 'true'
+                elif val == False:
+                    return 'false'
+                else:
+                    return val
             arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
                     '{isskyline})'.format(
                     time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
                     slideeasing=self.slideeasing, tox=self.tox, toy=self.toy, color=int(self.color),
-                    fx=self.fx if self.fx else 'none', isskyline=self.isskyline
+                    fx=self.fx if self.fx else 'none', isskyline=convert_isskyline(self.isskyline)
                     )
             skynotestr = ''
             if self.skynote is not None:
