@@ -71,10 +71,10 @@ def loadline(notestr: str):
     elif keyword == 'arc':
         if paralist[9] == 'true':  # 是否为黑线
             isskyline = True
-        else:
+        elif paralist[9] == 'false':
             isskyline = False
-            if paralist[9] != 'false':
-                raise AffNoteValueError
+        else:   # 支持designant, etc.
+            isskyline = paralist[9]
         if sub_expression:  # arctap读取
             splited = sub_expression.split(',')
             skynotetimelist = [arctap[arctap.index('(') + 1:arctap.rindex(')')] for arctap in splited]

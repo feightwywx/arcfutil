@@ -15,7 +15,7 @@ from ...exception import *
 
 class Arc(Hold):
     def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: Union[str, Callable, List[Callable]], fromy: float, toy: float,
-                 color: int, isskyline: bool, skynote: list = None, fx=None):
+                 color: int, isskyline: Union[bool, str], skynote: list = None, fx=None):
         super(Arc, self).__init__(time, totime, 1)
         self.fromx: float = fromx
         self.fromy: float = fromy
@@ -23,7 +23,7 @@ class Arc(Hold):
         self.toy: float = toy
         self.slideeasing: Union[str, Callable, List[Callable]] = slideeasing
         self.color: int = color
-        self.isskyline: bool = isskyline
+        self.isskyline: Union[bool, str] = isskyline
         self.skynote: list = skynote
         self.fx: str = fx
 
@@ -75,7 +75,7 @@ class Arc(Hold):
                     '{isskyline})'.format(
                     time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
                     slideeasing=self.slideeasing, tox=self.tox, toy=self.toy, color=int(self.color),
-                    fx=self.fx if self.fx else 'none', isskyline='true' if self.isskyline else 'false'
+                    fx=self.fx if self.fx else 'none', isskyline=self.isskyline
                     )
             skynotestr = ''
             if self.skynote is not None:
