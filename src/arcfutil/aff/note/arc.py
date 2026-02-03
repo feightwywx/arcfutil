@@ -14,8 +14,21 @@ from ...exception import *
 
 
 class Arc(Hold):
-    def __init__(self, time: int, totime: int, fromx: float, tox: float, slideeasing: Union[str, Callable, List[Callable]], fromy: float, toy: float,
-                 color: int, isskyline: Union[bool, str], skynote: list = None, fx=None):
+    def __init__(
+        self,
+        time: int,
+        totime: int,
+        fromx: float,
+        tox: float,
+        slideeasing: Union[str, Callable, List[Callable]],
+        fromy: float,
+        toy: float,
+        color: int,
+        isskyline: Union[bool, str],
+        skynote: list = None,
+        fx=None,
+        smoothness: float = 1.0,
+    ):
         super(Arc, self).__init__(time, totime, 1)
         self.fromx: float = fromx
         self.fromy: float = fromy
@@ -26,6 +39,7 @@ class Arc(Hold):
         self.isskyline: Union[bool, str] = isskyline
         self.skynote: list = skynote
         self.fx: str = fx
+        self.smoothness: float = smoothness
 
     def __getitem__(self, item):
         easingtype = self.__geteasingtype()  # (x_type, y_type)
@@ -78,12 +92,37 @@ class Arc(Hold):
                     return 'false'
                 else:
                     return val
-            arcstr = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},' \
-                    '{isskyline})'.format(
-                    time=int(self.time), totime=int(self.totime), fromx=self.fromx, fromy=self.fromy,
-                    slideeasing=self.slideeasing, tox=self.tox, toy=self.toy, color=int(self.color),
-                    fx=self.fx if self.fx else 'none', isskyline=convert_isskyline(self.isskyline)
-                    )
+            base = 'arc({time},{totime},{fromx:.2f},{tox:.2f},{slideeasing},{fromy:.2f},{toy:.2f},{color},{fx},{isskyline})'
+
+            smoothness = getattr(self, 'smoothness', 1.0)
+            if smoothness is None or smoothness <= 1.0:
+                arcstr = base.format(
+                    time=int(self.time),
+                    totime=int(self.totime),
+                    fromx=self.fromx,
+                    fromy=self.fromy,
+                    slideeasing=self.slideeasing,
+                    tox=self.tox,
+                    toy=self.toy,
+                    color=int(self.color),
+                    fx=self.fx if self.fx else 'none',
+                    isskyline=convert_isskyline(self.isskyline),
+                )
+            else:
+                extended = base[:-1] + ',{smoothness:.2f})'
+                arcstr = extended.format(
+                    time=int(self.time),
+                    totime=int(self.totime),
+                    fromx=self.fromx,
+                    fromy=self.fromy,
+                    slideeasing=self.slideeasing,
+                    tox=self.tox,
+                    toy=self.toy,
+                    color=int(self.color),
+                    fx=self.fx if self.fx else 'none',
+                    isskyline=convert_isskyline(self.isskyline),
+                    smoothness=smoothness,
+                )
             skynotestr = ''
             if self.skynote is not None:
                 for i in range(len(self.skynote)):
