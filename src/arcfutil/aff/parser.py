@@ -75,6 +75,17 @@ def loadline(notestr: str):
             isskyline = False
         else:   # 支持designant, etc.
             isskyline = paralist[9]
+
+        if len(paralist) >= 11:
+            try:
+                smoothness = float(paralist[10])
+            except ValueError:
+                smoothness = 1.0
+            if smoothness <= 1.0:
+                smoothness = 1.0
+        else:
+            smoothness = 1.0
+
         if sub_expression:  # arctap读取
             splited = sub_expression.split(',')
             skynotetimelist = [arctap[arctap.index('(') + 1:arctap.rindex(')')] for arctap in splited]
@@ -91,7 +102,8 @@ def loadline(notestr: str):
             color=int(paralist[7]),
             fx=None if paralist[8] == 'none' else paralist[8],
             isskyline=isskyline,
-            skynote=skynotetimelist
+            skynote=skynotetimelist,
+            smoothness=smoothness
         )
     elif keyword == 'timing':
         return note.Timing(
