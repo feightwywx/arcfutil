@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=82.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arcfutil"
+version = "0.13.0"
+description = "A Python module designed for processing Arcaea related files(.aff chart, songlist, etc.)"
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.4"
+license = {text = "MIT"}
+authors = [
+    {name = ".direwolf", email = "kururinmiracle@outlook.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+urls = {Homepage = "https://github.com/feightwywx/arcfutil"}
+
+[project.scripts]
+arcfutil = "arcfutil.cli:main"
+songlist = "arcfutil.cli.songlist:main"
+sortassets = "arcfutil.cli.sortassets:main"
+arcadeclean = "arcfutil.cli.arcade_clean:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["arcfutil*"]
+namespaces = true
