@@ -1,3 +1,5 @@
+
+
 # arcfutil
 
 (**Arc**aea **F**ile **Util**ity)
@@ -32,6 +34,8 @@ pip install -U arcfutil
 
 
 ### 命令行工具
+
+- `arcfutil`：显示模块的基本信息与使用提示。
 
 - `arcadeclean`：清理Arcade产生的多余文件！
 
